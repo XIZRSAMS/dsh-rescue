@@ -48,6 +48,13 @@ function loadCredentials() {
   return { extra, file, found: Boolean(extra.DEEPSEEK_API_KEY) }
 }
 
+/** Prefer the bundled Portable PowerShell 7 over whatever the PE has. */
+const pwshDir = join(ROOT, 'pwsh')
+const hasPwsh = existsSync(join(pwshDir, 'pwsh.exe'))
+const childPath = hasPwsh ? pwshDir + ';' + (process.env.PATH || '') : process.env.PATH || ''
+if (hasPwsh) console.log('[dsh] pwsh: ' + join(pwshDir, 'pwsh.exe'))
+else console.log('[dsh] pwsh: not bundled (put PowerShell 7 in ' + pwshDir + ' to enable shell tools)')
+
 const credentials = loadCredentials()
 if (credentials.found) {
   console.log('[dsh] credentials: loaded from ' + credentials.file)
@@ -67,7 +74,7 @@ const child = spawn(
   [KERNEL, '--profile', 'web', '--host', '127.0.0.1', '--port', String(PORT), '--no-open'],
   {
     cwd: ROOT,
-    env: { ...process.env, ...credentials.extra, DSH_HOME: HOME, TMP, TEMP: TMP },
+    env: { ...process.env, ...credentials.extra, PATH: childPath, DSH_HOME: HOME, TMP, TEMP: TMP },
     stdio: ['ignore', 'pipe', 'pipe'],
   },
 )
