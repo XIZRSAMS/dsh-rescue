@@ -17,6 +17,9 @@
 
 **📌 当前版本：v1.0.0** · [更新日志](./CHANGELOG.md)
 
+> ⚠️ 目前较为稳定支持的是 **优启通 / 微PE / 魔术师**，其他类环境的测试与实验数据较少。
+
+
 [English](./README.en.md) · [完整技术说明](./README.zh.md) · [PE 部署手册](./docs/pe-runbook.md)
 
 <br/>

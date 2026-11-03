@@ -17,6 +17,9 @@ When Windows won't boot. When the PE has no browser. When even the shell is gone
 
 **📌 Current version: v1.0.0** · [Changelog](./CHANGELOG.md)
 
+> ⚠️ Verified and stable on **USM (优启通) / MicroPE (微PE) / 魔术师**; other environments have far less test data.
+
+
 [中文主页](./README.md) · [Full reference](./README.zh.md) · [PE runbook](./docs/pe-runbook.md)
 
 <br/>
