@@ -31,6 +31,12 @@ console.log('[pure] out = ' + out)
 rmSync(out, { recursive: true, force: true })
 mkdirSync(out, { recursive: true })
 
+/* Optional bundled browser: an official Pale Moon portable tree, unpacked under
+ * dist/palemoon-official (see docs/pe-notes.md). Ships only when present. */
+if (existsSync(join(REPO_ROOT, 'dist', 'palemoon-official'))) {
+  copy(join(REPO_ROOT, 'dist', 'palemoon-official'), join(out, 'browser'))
+}
+
 copy(join(REPO_ROOT, 'runtime', 'node'), join(out, 'runtime', 'node'))
 copy(join(REPO_ROOT, 'runtime', 'node_modules'), join(out, 'runtime', 'node_modules'))
 mkdirSync(join(out, 'runtime', 'tmp'), { recursive: true })
@@ -54,34 +60,9 @@ writeFileSync(
 )
 writeFileSync(join(profileDir, 'cordis.yml'), '[]\n')
 
-writeFileSync(
-  join(out, 'start-dsh.cmd'),
-  [
-    '@echo off',
-    'rem dsh-pure · launch the official kernel. Works in WinPE and on Windows.',
-    'setlocal',
-    'set "ROOT=%~dp0"',
-    'if not exist "%ROOT%runtime\\tmp" mkdir "%ROOT%runtime\\tmp" 2>nul',
-    'set "TMP=%ROOT%runtime\\tmp"',
-    'set "TEMP=%ROOT%runtime\\tmp"',
-    'set "DSH_HOME=%ROOT%runtime\\home"',
-    'set "NODE=%ROOT%runtime\\node\\node.exe"',
-    'if not exist "%NODE%" set "NODE=node"',
-    '',
-    'set "HOST=127.0.0.1"',
-    'for /f "tokens=2 delims=:" %%a in (\'ipconfig ^| findstr /c:"IPv4"\') do if "%HOST%"=="127.0.0.1" set "HOST=%%a"',
-    'set "HOST=%HOST: =%"',
-    '',
-    'echo [dsh-pure] node=%NODE%',
-    'echo [dsh-pure] home=%DSH_HOME%',
-    'echo [dsh-pure] url=http://%HOST%:3080/',
-    'echo.',
-    '"%NODE%" "%ROOT%runtime\\node_modules\\@deepseek-ai\\dsh\\lib\\bin.js" --profile web --host %HOST% --port 3080 --no-open',
-    'echo [dsh-pure] exit=%ERRORLEVEL%',
-    'pause',
-  ].join('\r\n'),
-  'utf8',
-)
+/* The PE launcher lives in launcher/pe-start.cmd so it is edited in one place. */
+copy(join(REPO_ROOT, 'launcher', 'pe-start.cmd'), join(out, 'start-dsh.cmd'))
+
 
 writeFileSync(
   join(out, 'pe-probe.cmd'),
