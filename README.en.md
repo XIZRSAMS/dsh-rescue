@@ -143,12 +143,33 @@ Inside the PE, run `start-dsh.cmd`; it prints three lines:
 
 ## 📝 Changelog
 
-**Current version: v1.0.0 (2026-11-04)**
+### v1.0.0 (2026-11-04) — current release
 
-First complete release: the WinPE bundle, six rescue skills, a dependency-free launcher,
-bilingual docs, small-screen support.
+**✨ Added**
 
-See [CHANGELOG.md](./CHANGELOG.md) for the full history.
+- **WinPE bundle**: node runtime + kernel + PowerShell 7 + Pale Moon in one folder. Copy to USB, run, done — no registry writes, no driver install.
+- **Six rescue skills**: triage / boot repair / disk repair / data rescue / offline registry / password reset, picked automatically by symptom.
+- **Dependency-free launcher**: `pe-boot.mjs` does everything in node — locate runtime, inject the API key, capture the token, open the browser. No cmd externals.
+- **Tray launcher**: on desktop Windows, double-click `dsh-rescue.exe`; it parks in the tray and opens the tokenised URL.
+- **Adaptive degradation**: probes shell / PTY / GPU / browser / writable disk, disables what is missing, explains why.
+- **Bilingual**: UI and docs in Chinese and English.
+- **Small-screen ready**: 85% rendering, hidden bookmarks bar, window sized above a 1024×768 taskbar.
+
+**🐛 Fixed**
+
+- `AbortSignal.any is not a function` on old engines: client polyfill (plus `throwIfAborted`, `structuredClone`, `crypto.randomUUID`).
+- `ping` / `ipconfig` / `timeout` missing in PE: launcher rewritten in pure node.
+- No PowerShell in PE: ships PowerShell 7.6.9 portable (self-contained, no .NET).
+- `dsh-spill-local` EPERM when `%TMP%` is read-only: pinned to `runtime/tmp`.
+- `Get-CimInstance` unavailable in PE: skills document `net start winmgmt` and non-CIM fallbacks.
+- API key and session credentials leaked into packages: `pack-pure` now wipes them and writes an empty template.
+- Browser window larger than a 1024×768 screen: 1000×700 and two toolbars hidden.
+
+**🧩 Earlier**
+
+- v0.1.0 (2026-11-03): first usable release — `dsh-plugin-degraded`, the A-side portable runtime, acceptance pipeline.
+
+Full history: [CHANGELOG.md](./CHANGELOG.md).
 
 ---
 
