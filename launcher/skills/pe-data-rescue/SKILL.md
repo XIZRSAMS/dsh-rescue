@@ -26,7 +26,9 @@ Get-Volume | Select-Object DriveLetter,FileSystemLabel,Size,SizeRemaining
 ## 3. 用 robocopy 拷贝
 
 ~~~cmd
-robocopy X:\Users\* E:\backup\Users /E /COPY:DAT /R:1 /W:1 /XJ /NFL /NDL /LOG:E:\backup\copy.log
+set SRC=X:\Users
+set DST=E:\backup\Users
+robocopy %SRC% %DST% /E /COPY:DAT /R:1 /W:1 /XJ /NFL /NDL /LOG:E:\backup\copy.log
 ~~~
 
 参数解释（每个都不是随便写的）：
