@@ -8,7 +8,7 @@
 >
 > **任何时候的介入急救。**
 
-![version](https://img.shields.io/badge/version-0.1.0-blue)
+![version](https://img.shields.io/badge/version-1.0.0-blue)
 ![license](https://img.shields.io/badge/license-MIT-green)
 ![platform](https://img.shields.io/badge/platform-WinPE%20%7C%20Windows-8A2BE2)
 ![topic](https://img.shields.io/badge/topic-dsh--plugin-brightgreen)

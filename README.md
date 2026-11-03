@@ -8,7 +8,7 @@
 >
 > **Rescue that intervenes at any moment.**
 
-![版本](https://img.shields.io/badge/version-0.1.0-blue)
+![版本](https://img.shields.io/badge/version-1.0.0-blue)
 ![许可](https://img.shields.io/badge/license-MIT-green)
 ![平台](https://img.shields.io/badge/platform-WinPE%20%7C%20Windows-8A2BE2)
 ![话题](https://img.shields.io/badge/topic-dsh--plugin-brightgreen)

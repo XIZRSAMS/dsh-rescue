@@ -1,6 +1,6 @@
 {
   "name": "dsh-plugin-degraded",
-  "version": "0.1.0",
+  "version": "1.0.0",
   "description": "Rescue/degraded-mode plugin for DeepSeek Harness: probes shell, PTY, UI and image capabilities, hides what the host cannot run, and reports why — with zero runtime dependencies.",
   "type": "module",
   "main": "index.js",

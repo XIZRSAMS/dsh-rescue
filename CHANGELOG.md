@@ -1,55 +1,47 @@
-# Changelog
+<div align="center">
 
-本项目的所有重要改动都会记录在这里。格式参考
-[Keep a Changelog](https://keepachangelog.com/zh-CN/1.1.0/)，版本号遵循
-[语义化版本](https://semver.org/lang/zh-CN/)。
+# 📝 更新日志 / Changelog
 
-## [Unreleased]
+</div>
 
-### Added
+## v1.0.0（2026-11-04）—— 当前版本
 
-- A 版便携运行时与验证流水线：`src/launch.mjs`（接管 entry：四层配置解析、
-  kernel 定位、`--patch` overlay、进程与信号转发）、`scripts/a/provision.mjs`
-  （拷 node、装 kernel、调 setup、实体化插件 junction、写 manifest）、
-  P1 `probe` / P4 `boot` / P5 `matrix` / `portable-check` / P6 `pe-build` /
-  `run` 总编排，日志统一落 `runtime/logs`。
-- `scripts/a/test`：启动参数、kernel 候选顺序（与 fallback 同步）、probe 记录校验、
-  矩阵分类的纯逻辑测试。
-- README / docs/pe-notes / docs/architecture 补齐 A 版说明；CI 增加 A 版测试步骤。
+### ✨ 新功能
 
-### Fixed
+- **WinPE 成品包**：node 运行时 + 内核 + PowerShell 7 + Pale Moon 浏览器一体化，
+  整个目录拷到 U 盘就能用，不写注册表、不装驱动。
+- **六个救援技能**：分诊 / 引导修复 / 磁盘修复 / 数据抢救 / 离线注册表 / 密码重置，
+  AI 按症状自动选用，每份都写明前置条件、命令与红线。
+- **零依赖启动器**：`pe-boot.mjs` 全部用 node 实现——找运行时、注入 API Key、
+  抓 token、拉起浏览器，不依赖任何 cmd 外部命令。
+- **托盘启动器**：Windows 下双击 `dsh-rescue.exe`，托盘常驻 + 自动打开带 token 的地址。
+- **环境自适应降级**：探测 shell / PTY / GPU / 浏览器 / 可写盘，缺什么关什么，并说明原因。
+- **中英双语**：界面与文档双语，中文为主页语。
+- **小屏适配**：1024×768 下按 85% 渲染、隐藏书签栏、窗口卡在任务栏上方。
 
-- 冷启动不再自动打开浏览器：向内核转发 `--no-open`（0.2.0-rc.2 默认会开）。
-- 子进程的 `TEMP`/`TMP` 指向 `runtime/tmp`，宿主临时目录不可写时不再出现
-  `dsh-spill-local` 的 EPERM 警告。
+### 🐛 修复
 
-## [0.1.0] - 2026-11-03
+- 浏览器引擎太老报 `AbortSignal.any is not a function`：给客户端注入 polyfill
+  （连带 `throwIfAborted` / `structuredClone` / `crypto.randomUUID`）。
+- PE 里 `ping` / `ipconfig` / `timeout` 全被精简：启动器改为纯 node 实现。
+- PE 里没有 PowerShell：随包携带 PowerShell 7.6.9 便携版（自包含，不需要 .NET）。
+- `%TMP%` 不可写导致 `dsh-spill-local` 报 EPERM：钉到包内 `runtime/tmp`。
+- `Get-CimInstance` 在 PE 里不可用：技能提供 `net start winmgmt` 与不用 CIM 的替代路径。
+- 打包误带 API Key 与会话凭据：`pack-pure` 强制清空并写空模板。
+- 浏览窗口超出 1024×768 屏幕：改为 1000×700 并隐藏两行工具栏。
 
-首个可用版本，目标内核 `@deepseek-ai/dsh@0.2.0-rc.2`。
+### 🧩 更早
 
-### Added
+- **v0.1.0（2026-11-03）**：首个可用版本。
+  `dsh-plugin-degraded` 插件（Host + Web Client 双半，零运行时依赖）、
+  A 版便携运行时、验收流水线与四层配置解析。
 
-- `packages/dsh-plugin-degraded`：Host + Web Client 双半插件，零运行时依赖。
-  - 纯函数层：`lib/probe.js`（能力探测）、`lib/policy.js`（三态决策）、
-    `lib/report.js`（脱敏报告）、`lib/config.js`（手写 schema）。
-  - Host 半：`ctx.provide('rescue')`、`/rescue` 命令、system prompt 环境段落、
-    `GET /api/dsh-rescue/capabilities`、`agent/created` 上的 `ctx.tools.restrict`。
-  - Client 半：设置页「救援模式」+ 降级提示条（仅在真的降级时出现）。
-- `profiles/`：可复现 profile 清单 + `minimal` / `full` 两个覆盖层。
-- `scripts/setup.mjs`：幂等渲染 `runtime/home`、安装插件、生成启动器、组合校验、
-  写环境报告；拒绝写入正在使用的 `DSH_HOME`。
-- `scripts/upgrade.mjs`：只改 `dsh-version.json`，失败自动回滚。
-- `scripts/verify.mjs`：`--compose` / `--privacy` / `--boot`。
-- `scripts/doctor.mjs`：与插件同源的探测与决策输出。
-- `scripts/privacy-scan.mjs`：二进制、API Key、个人路径门禁（`--strict` 供 CI）。
-- `start.cmd` / `start.sh` + `scripts/entry.mjs` / `scripts/fallback-launch.mjs`：
-  参数解析集中在 Node，`.cmd` 只是转发。
-- `test/`：插件纯逻辑单测、模板与 setup 集成测试、隐私测试、无头 CDP 截图与性能探针。
-- `docs/`：架构、上游兼容性假设表、WinPE 笔记。
+---
 
-### Known limitations
+<div align="center">
 
-- Electron 桌面端不做 PE 适配（只提示 `--disable-gpu`）。
-- `packages/dsh-shell-cmd` 目前是预留目录：无 PowerShell 时先用工具隐藏降级，
-  cmd 后端实现留待后续版本。
-- `test/perf.test.mjs` 需要手动起服务；没有 Edge 或服务时自动 skip。
+**任何时候的介入急救。**
+
+🚀 还会持续更新的！
+
+</div>
