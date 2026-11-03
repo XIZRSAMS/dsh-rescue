@@ -1,31 +1,30 @@
 ============================================
-dsh-pure · PE 使用说明（2026-11-03 v5）
+dsh-pure · PE 使用说明（2026-11-03 v6）
 ============================================
 
-【当前状态：只差 API Key】
-  网络通了、界面通了、会话能建、消息能发。
-  报「API 密钥无效」是因为 DSH 读的是环境变量 DEEPSEEK_API_KEY，
-  PE 里没有这个变量，光在界面里填可能不生效。
+【v6 新增：shell 通道】
+  PE 里没有 PowerShell，AI 之前只能读写文件、不能执行命令。
+  现在包里带了一个 pwsh.exe 垫片（用 Node SEA 做的，81.7MB），
+  它把 dsh 发来的命令转给 PE 自带的 cmd.exe 执行。
+  dsh 启动时会打印 [dsh] pwsh: G:\dsh-pure\pwsh\pwsh.exe
 
-【怎么配 Key：三步】
-  1. 用记事本打开 G:\dsh-pure\apikey.txt
-  2. 两种写法随便挑一种：
-       DEEPSEEK_API_KEY=sk-你的key
-       或者 单独一行  sk-你的key
-  3. 保存，重新双击 G:\dsh-pure\start-dsh.cmd
+  ★ 注意：它是 cmd 语义，不是真 PowerShell。
+    dir / cd / echo / copy / del / type 这些能用，
+    Get-ChildItem、| 管道对象、$env:XXX 这类 PowerShell 语法不适用。
 
-  启动器会打印 [dsh] credentials: loaded from ... 表示读到了。
+【怎么用】
+  1. 双击 G:\dsh-pure\start-dsh.cmd
+  2. 看启动输出三行都对：
+       [dsh] credentials: loaded from ...apikey.txt
+       [dsh] pwsh: G:\dsh-pure\pwsh\pwsh.exe
+       [dsh] url: http://127.0.0.1:3080/?token=...
+  3. 浏览器里发消息，让 AI 跑个 dir 试试
 
-【安全提醒】
-  apikey.txt 是明文。别把这个 U 盘借人，用完可以清空这行。
+【不要再做的事】
+  × 不要删 pwsh 目录（删了 AI 就只能读写文件了）
+  × 不要动 G:\dsh-pure 以外的目录
 
-【已经确认可行】
-  - node v22.20.0 在 PE 里能跑
-  - dsh 内核、界面、会话、消息全通
-  - Pale Moon 缺的 AbortSignal.any 已 polyfill 补上
-  - 网络连上后接口能通，只剩鉴权
-
-【不要做的事】
-  × 不要去 G:\dsh-pure 以外的目录乱点
-  × 不要删包里的文件
-  × 不要改分辨率
+【已确认可行】
+  - node v22.20.0 / dsh 内核 / 界面 / 会话 / 消息 / 联网 全部正常
+  - Pale Moon 缺的 AbortSignal.any 已 polyfill
+  - shell 走 cmd 垫片，命令能真正执行

@@ -35,3 +35,8 @@ test/.profile-*/
 *.log
 .DS_Store
 Thumbs.db
+
+# ── SEA build scratch ─────────────────────────────────────────────────────
+tools/seabuild/node_modules/
+tools/seabuild/*.blob
+tools/seabuild/package-lock.json
