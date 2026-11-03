@@ -1,30 +1,29 @@
 ============================================
-dsh-pure · PE 使用说明（2026-11-03 v6）
+dsh-pure · PE 使用说明（2026-11-03 v7 · 正式版）
 ============================================
 
-【v6 新增：shell 通道】
-  PE 里没有 PowerShell，AI 之前只能读写文件、不能执行命令。
-  现在包里带了一个 pwsh.exe 垫片（用 Node SEA 做的，81.7MB），
-  它把 dsh 发来的命令转给 PE 自带的 cmd.exe 执行。
-  dsh 启动时会打印 [dsh] pwsh: G:\dsh-pure\pwsh\pwsh.exe
+【这一版的 shell 通道】
+  包里带的是真 PowerShell 7.6.9（自包含，不需要系统装 .NET）。
+  Get-ChildItem / 管道 / Select-Object / $env:XXX 全部可用。
 
-  ★ 注意：它是 cmd 语义，不是真 PowerShell。
-    dir / cd / echo / copy / del / type 这些能用，
-    Get-ChildItem、| 管道对象、$env:XXX 这类 PowerShell 语法不适用。
-
-【怎么用】
+【启动：三步】
   1. 双击 G:\dsh-pure\start-dsh.cmd
-  2. 看启动输出三行都对：
+  2. 看三行输出都对：
        [dsh] credentials: loaded from ...apikey.txt
        [dsh] pwsh: G:\dsh-pure\pwsh\pwsh.exe
        [dsh] url: http://127.0.0.1:3080/?token=...
-  3. 浏览器里发消息，让 AI 跑个 dir 试试
+  3. 浏览器自动打开，发消息让 AI 跑命令
 
-【不要再做的事】
-  × 不要删 pwsh 目录（删了 AI 就只能读写文件了）
-  × 不要动 G:\dsh-pure 以外的目录
-
-【已确认可行】
-  - node v22.20.0 / dsh 内核 / 界面 / 会话 / 消息 / 联网 全部正常
+【已经完整验证的】
+  - node v22.20.0 在 PE 里运行正常
+  - dsh 内核 / 界面 / 会话 / 消息 / 联网 全部正常
   - Pale Moon 缺的 AbortSignal.any 已 polyfill
-  - shell 走 cmd 垫片，命令能真正执行
+  - PowerShell 7.6.9 可用（命令能真正执行）
+
+【不要做的事】
+  × 不要删 pwsh 目录（删了 AI 就只能读写文件）
+  × 不要动 G:\dsh-pure 以外的目录
+  × 不要改分辨率
+
+【出问题看哪里】
+  启动器屏幕输出 + G:\dsh-pure\runtime\logs\web.log
