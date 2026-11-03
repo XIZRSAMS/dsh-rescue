@@ -8,7 +8,7 @@
  */
 
 import { spawn } from 'node:child_process'
-import { createWriteStream, existsSync, mkdirSync } from 'node:fs'
+import { createWriteStream, existsSync, mkdirSync, readFileSync } from 'node:fs'
 import { dirname, join } from 'node:path'
 import { fileURLToPath } from 'node:url'
 
@@ -30,6 +30,32 @@ if (!existsSync(KERNEL)) {
   process.exit(2)
 }
 
+/** Read KEY=VALUE lines from apikey.txt (or a bare sk-... line). */
+function loadCredentials() {
+  const file = join(ROOT, 'apikey.txt')
+  const extra = {}
+  if (!existsSync(file)) return { extra, file, found: false }
+  let text = ''
+  try { text = readFileSync(file, 'utf8') } catch { return { extra, file, found: false } }
+  for (const line of text.split(/\r?\n/)) {
+    const pair = line.match(/^\s*([A-Za-z0-9_]+)\s*=\s*(.+?)\s*$/)
+    if (pair) extra[pair[1]] = pair[2].replace(/^["']|["']$/g, '')
+  }
+  if (!extra.DEEPSEEK_API_KEY) {
+    const bare = text.trim().match(/sk-[A-Za-z0-9_-]{16,}/)
+    if (bare) extra.DEEPSEEK_API_KEY = bare[0]
+  }
+  return { extra, file, found: Boolean(extra.DEEPSEEK_API_KEY) }
+}
+
+const credentials = loadCredentials()
+if (credentials.found) {
+  console.log('[dsh] credentials: loaded from ' + credentials.file)
+} else {
+  console.log('[dsh] credentials: none found. Put your key in ' + credentials.file)
+  console.log('               either  DEEPSEEK_API_KEY=sk-xxxx  or just the bare sk-xxxx line.')
+}
+
 console.log('[dsh] root   = ' + ROOT)
 console.log('[dsh] node   = ' + NODE)
 console.log('[dsh] home   = ' + HOME)
@@ -41,7 +67,7 @@ const child = spawn(
   [KERNEL, '--profile', 'web', '--host', '127.0.0.1', '--port', String(PORT), '--no-open'],
   {
     cwd: ROOT,
-    env: { ...process.env, DSH_HOME: HOME, TMP, TEMP: TMP },
+    env: { ...process.env, ...credentials.extra, DSH_HOME: HOME, TMP, TEMP: TMP },
     stdio: ['ignore', 'pipe', 'pipe'],
   },
 )
@@ -84,9 +110,13 @@ async function waitReady() {
 
 function openBrowser(url) {
   const palemoon = join(ROOT, 'browser', 'Palemoon-Portable.exe')
-  const command = existsSync(palemoon) ? '"' + palemoon + '" "' + url + '"' : '"' + url + '"'
-  spawn('cmd', ['/c', 'start', '""', command], { stdio: 'ignore', detached: true, windowsHide: true }).unref()
-  return existsSync(palemoon) ? 'bundled Pale Moon' : 'default browser'
+  if (existsSync(palemoon)) {
+    // Spawn the exe directly: going through "start" inside cmd is unreliable in PE.
+    spawn(palemoon, [url], { stdio: 'ignore', detached: true }).unref()
+    return 'bundled Pale Moon'
+  }
+  spawn('cmd', ['/c', 'start', '""', url], { stdio: 'ignore', detached: true, windowsHide: true }).unref()
+  return 'default browser'
 }
 
 const ready = await waitReady()

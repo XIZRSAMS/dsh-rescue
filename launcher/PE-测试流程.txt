@@ -1,25 +1,31 @@
-@echo off
-rem dsh-pure · network check. Tells you whether the PE has a working route out.
-setlocal
-set "ROOT=%~dp0"
-set "NODE=%ROOT%runtime\node\node.exe"
-if not exist "%NODE%" set "NODE=node"
-set "TMP=%ROOT%runtime\tmp"
-set "TEMP=%ROOT%runtime\tmp"
+============================================
+dsh-pure · PE 使用说明（2026-11-03 v5）
+============================================
 
-echo === network check ===
+【当前状态：只差 API Key】
+  网络通了、界面通了、会话能建、消息能发。
+  报「API 密钥无效」是因为 DSH 读的是环境变量 DEEPSEEK_API_KEY，
+  PE 里没有这个变量，光在界面里填可能不生效。
 
-echo [1] interfaces
-"%NODE%" -e "const os=require('os');const n=os.networkInterfaces();let any=false;for(const k in n){for(const i of n[k]){if(i.family==='IPv4'){console.log(k,i.address,i.internal?'loopback':'LAN');any=true}}}if(!any)console.log('(none) => no NIC driver in this PE')"
+【怎么配 Key：三步】
+  1. 用记事本打开 G:\dsh-pure\apikey.txt
+  2. 两种写法随便挑一种：
+       DEEPSEEK_API_KEY=sk-你的key
+       或者 单独一行  sk-你的key
+  3. 保存，重新双击 G:\dsh-pure\start-dsh.cmd
 
-echo [2] dns
-"%NODE%" -e "require('dns').lookup('api.deepseek.com',function(e,a){console.log(e?('DNS FAIL '+e.code):('DNS OK '+a))})"
+  启动器会打印 [dsh] credentials: loaded from ... 表示读到了。
 
-echo [3] https
-"%NODE%" -e "const ac=new AbortController();setTimeout(function(){ac.abort()},8000);fetch('https://api.deepseek.com/',{method:'HEAD',signal:ac.signal}).then(function(r){console.log('HTTPS reachable '+r.status)}).catch(function(e){console.log('HTTPS FAIL '+(e&&e.message||e))})"
+【安全提醒】
+  apikey.txt 是明文。别把这个 U 盘借人，用完可以清空这行。
 
-echo.
-echo [4] clock (TLS needs a sane date)
-"%NODE%" -e "console.log(new Date().toString())"
+【已经确认可行】
+  - node v22.20.0 在 PE 里能跑
+  - dsh 内核、界面、会话、消息全通
+  - Pale Moon 缺的 AbortSignal.any 已 polyfill 补上
+  - 网络连上后接口能通，只剩鉴权
 
-pause
+【不要做的事】
+  × 不要去 G:\dsh-pure 以外的目录乱点
+  × 不要删包里的文件
+  × 不要改分辨率
