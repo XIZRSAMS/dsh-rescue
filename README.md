@@ -166,3 +166,13 @@ test/                           node:test + 无头 CDP 截图
 ## 📄 许可
 
 MIT。非官方发行版，与 DeepSeek 无隶属关系。
+
+---
+
+<div align="center">
+
+**任何时候的介入急救。**
+
+🚀 还会持续更新的！
+
+</div>

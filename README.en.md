@@ -142,3 +142,13 @@ Inside the PE, run `start-dsh.cmd`; it prints three lines:
 ## 📄 License
 
 MIT. Unofficial distribution, not affiliated with DeepSeek.
+
+---
+
+<div align="center">
+
+**Rescue that intervenes at any moment.**
+
+🚀 Still evolving!
+
+</div>
