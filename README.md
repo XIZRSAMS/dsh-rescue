@@ -192,6 +192,12 @@ node scripts/a/run.mjs --all                               # portable runtime + 
 an installed kernel it skips instead of failing; pass `--require-boot` in CI to
 make that a failure.
 
+## PE bundle (dsh-pure)
+
+`node scripts/pack-pure.mjs` assembles `dist/pure`: node runtime, kernel deps,
+PowerShell 7, Pale Moon, and six rescue skills. See [docs/pe-runbook.md](docs/pe-runbook.md)
+for the external downloads and the full deployment steps.
+
 ## WinPE notes
 
 See [docs/pe-notes.md](docs/pe-notes.md). Short version: Node and every

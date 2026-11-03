@@ -28,7 +28,11 @@ function copy(src, dest) {
   return true
 }
 
+const haveBrowser = existsSync(join(REPO_ROOT, 'dist', 'palemoon-official', 'Palemoon-Portable.exe'))
+const havePwsh = existsSync(join(REPO_ROOT, 'dist', 'pwsh7', 'pwsh.exe'))
 console.log('[pure] out = ' + out)
+if (!haveBrowser) console.log('[pure] note: dist/palemoon-official missing -> package ships without a browser (see docs/pe-runbook.md)')
+if (!havePwsh) console.log('[pure] note: dist/pwsh7 missing -> package ships without PowerShell')
 rmSync(out, { recursive: true, force: true })
 mkdirSync(out, { recursive: true })
 
@@ -132,5 +136,39 @@ if (patchRun.status !== 0) {
   process.exit(1)
 }
 console.log((patchRun.stdout || '').trim())
+
+/* Never ship runtime state: credentials, sessions, logs. */
+function wipeRuntimeState(root) {
+  const homeDir = join(root, 'runtime', 'home')
+  for (const name of ['.credentials.yaml', 'settings.yaml', '.anonymous-user-id']) {
+    const target = join(homeDir, name)
+    if (existsSync(target)) rmSync(target, { force: true })
+  }
+  for (const dir of ['storages', 'logs']) {
+    const target = join(homeDir, dir)
+    if (existsSync(target)) rmSync(target, { recursive: true, force: true })
+  }
+}
+
+/* Ship an empty key template, never a filled one. */
+function writeKeyTemplate(root) {
+  const target = join(root, 'apikey.txt')
+  if (existsSync(target)) return
+  writeFileSync(
+    target,
+    [
+      '# dsh-pure · API Key（明文，自己填，别外借 U 盘）',
+      '#',
+      '#   DEEPSEEK_API_KEY=sk-你的key',
+      '# 或者单独一行 sk-你的key',
+      '',
+      'DEEPSEEK_API_KEY=',
+    ].join('\r\n'),
+    'utf8',
+  )
+}
+
+wipeRuntimeState(out)
+writeKeyTemplate(out)
 
 console.log('[pure] done')

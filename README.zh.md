@@ -215,6 +215,25 @@ node scripts/a/run.mjs --all                               # 便携运行时 + P
 
 ---
 
+## PE 成品包（dsh-pure）
+
+上面是插件线；仓库还能直接产出一个插进 WinPE 就能用的成品包：
+
+```sh
+node scripts/pack-pure.mjs
+```
+
+产物是 `dist/pure`：内置 node 运行时、内核依赖、PowerShell 7、Pale Moon 便携浏览器、
+以及六个救援技能（分诊 / 引导修复 / 磁盘修复 / 数据抢救 / 离线注册表 / 密码重置）。
+
+外部组件（两个 zip）不提交进仓库，下载地址与完整部署步骤见
+[docs/pe-runbook.md](docs/pe-runbook.md)。
+
+启动器 `pe-boot.mjs` 负责：找运行时、注入 API Key、启动内核、抓 token、开浏览器，
+全部用 node 实现——因为这个 PE 里没有 ping / ipconfig / timeout。
+
+---
+
 ## WinPE 笔记
 
 详见 [docs/pe-notes.md](docs/pe-notes.md)。摘要：Node 与所有 `@deepseek-ai/*`
