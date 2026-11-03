@@ -1,0 +1,37 @@
+# ── runtime: everything setup.mjs generates ────────────────────────────────
+runtime/
+logs/
+dist/
+
+# ── local / machine-specific config (never commit) ─────────────────────────
+config.local.json
+config.json
+.credentials.yaml
+*.local.*
+
+# ── dependencies ───────────────────────────────────────────────────────────
+node_modules/
+.pnpm-store/
+
+# ── binaries / disk images / archives (never commit) ───────────────────────
+*.exe
+*.dll
+*.tgz
+*.tar
+*.zip
+*.7z
+*.iso
+*.wim
+*.vhd
+*.vhdx
+
+# ── test artefacts ─────────────────────────────────────────────────────────
+test/*.png
+test/.profile-*/
+.test-tmp/
+
+# ── scratch ────────────────────────────────────────────────────────────────
+.backup*/
+*.log
+.DS_Store
+Thumbs.db

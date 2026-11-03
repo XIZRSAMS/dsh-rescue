@@ -1,0 +1,49 @@
+name: release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: tag matches dsh-version.json
+        run: |
+          node -e "
+            const info = require('./dsh-version.json');
+            const tag = process.env.GITHUB_REF_NAME.replace(/^v/, '');
+            if (info.rescueVersion !== tag) {
+              console.error('tag ' + tag + ' != rescueVersion ' + info.rescueVersion);
+              process.exit(1);
+            }
+          "
+
+      - name: privacy gate
+        run: node scripts/privacy-scan.mjs --strict
+
+      - name: tests
+        run: node --test packages/dsh-plugin-degraded/test/*.test.mjs
+
+      - name: pack
+        run: |
+          mkdir -p dist
+          zip -r "dist/dsh-rescue-${GITHUB_REF_NAME}.zip" . \
+            -x '.git/*' 'runtime/*' 'node_modules/*' 'config.json' '.credentials.yaml'
+          cd dist && sha256sum *.zip > SHA256SUMS
+
+      - name: publish
+        uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            dist/*.zip
+            dist/SHA256SUMS

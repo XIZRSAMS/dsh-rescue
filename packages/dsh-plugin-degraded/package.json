@@ -1,0 +1,44 @@
+{
+  "name": "dsh-plugin-degraded",
+  "version": "0.1.0",
+  "description": "Rescue/degraded-mode plugin for DeepSeek Harness: probes shell, PTY, UI and image capabilities, hides what the host cannot run, and reports why — with zero runtime dependencies.",
+  "type": "module",
+  "main": "index.js",
+  "exports": {
+    ".": "./index.js",
+    "./client": "./client.js",
+    "./package.json": "./package.json",
+    "./lib/probe.js": "./lib/probe.js",
+    "./lib/policy.js": "./lib/policy.js",
+    "./lib/report.js": "./lib/report.js",
+    "./lib/config.js": "./lib/config.js"
+  },
+  "files": [
+    "index.js",
+    "client.js",
+    "cordis.patch.yml",
+    "icon.svg",
+    "lib",
+    "locale",
+    "README.md"
+  ],
+  "dsh": {
+    "bundle": {
+      "patch": "./cordis.patch.yml"
+    },
+    "client": {
+      "platform": "web",
+      "inject": ["@deepseek-ai/dsh-client-ui-slots"]
+    }
+  },
+  "icon": "./icon.svg",
+  "meta": {
+    "title": "救援降级模式",
+    "description": "探测本机能力并把跑不动的东西关掉：Shell、PTY、UI 装饰、图片预览，全部可逆。"
+  },
+  "engines": {
+    "node": ">=22"
+  },
+  "keywords": ["dsh", "dsh-plugin", "rescue", "winpe", "degraded", "capabilities"],
+  "license": "MIT"
+}

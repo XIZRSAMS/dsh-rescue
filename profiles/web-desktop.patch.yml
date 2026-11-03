@@ -1,0 +1,25 @@
+# dsh-rescue · profile 层
+#
+# 这个文件只包含「本项目」的行：对 bundle patch 已插入的 rescue-degraded 行做
+# 配置覆盖，以及本发行版需要的少量补充行。
+#
+# 注意：patch 覆盖会替换整个 config（不是深合并），所以覆盖 rescue-degraded
+# 时必须重述它的全部字段。setup.mjs 会按 config.json 渲染这份文件。
+#
+# 层叠顺序（低 → 高）：
+#   bundle patches → 本文件 → $DSH_HOME/cordis.patch.yml → --patch overlays
+
+- id: rescue-degraded
+  name: 'dsh-plugin-degraded'
+  config:
+    shell: auto
+    ui: auto
+    terminal: auto
+    image: auto
+    report:
+      promptSection: true
+      command: true
+    server:
+      allowRemote: false
+    client:
+      statusBar: true

@@ -1,0 +1,21 @@
+# dsh-rescue · minimal 覆盖层（默认）
+#
+# 只放 **一定存在** 的官方行（@deepseek-ai/dsh-web-app 声明的），保证默认 profile
+# 不会产生 "entry not found" 噪音，也不会让 --dump-config 以非零退出。
+#
+# 第三方装饰插件（皮肤 / 壁纸 / 宠物 / 挂件 / 动效 / 看图）不是必然存在的：
+# 装了才需要关。它们的包名 → 行 id 映射在 profiles/decorations.json，
+# setup.mjs 只对**实际安装**的包生成对应的 disabled 行。
+#
+# full 由 runtime/full.patch.yml（--patch overlay，优先级最高）覆盖回 false；
+# profiles/full.patch.yml 是那份 overlay 的模板。
+#
+# 官方行 id 见 @deepseek-ai/dsh-web-app/cordis.patch.yml。
+
+# 右栏文档预览：Markdown/代码/HTML/PDF/Office 渲染器（包体积与首屏大头）
+- id: ui-sidebar-documentpreview
+  disabled: true
+
+# 浏览器标签页：Electron 沙箱外跳，救援场景不需要
+- id: ui-sidebar-browser
+  disabled: true

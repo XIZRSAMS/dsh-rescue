@@ -1,0 +1,17 @@
+{
+  "name": "dsh-profile-web-desktop",
+  "private": true,
+  "description": "dsh-rescue profile manifest. setup.mjs copies this into <runtime>/home/profiles/<name>/.",
+  "dependencies": {
+    "dsh-plugin-degraded": "file:../packages/dsh-plugin-degraded"
+  },
+  "dsh": {
+    "profile": {
+      "bundles": [
+        "@deepseek-ai/dsh-base",
+        "@deepseek-ai/dsh-web-app",
+        "dsh-plugin-degraded"
+      ]
+    }
+  }
+}

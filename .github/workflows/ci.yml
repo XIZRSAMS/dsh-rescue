@@ -1,0 +1,39 @@
+name: ci
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  logic:
+    name: plugin logic (linux)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: plugin unit tests
+        run: node --test packages/dsh-plugin-degraded/test/*.test.mjs
+      - name: repository tests
+        run: node --test test/profile.test.mjs test/setup.test.mjs test/privacy.test.mjs
+      - name: privacy gate (strict)
+        run: node scripts/privacy-scan.mjs --strict
+
+  compose:
+    name: profile composition (windows)
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: render profile
+        run: node scripts/setup.mjs --no-install --no-write-config
+      - name: verify composition
+        run: node scripts/verify.mjs --compose
+      - name: doctor snapshot
+        run: node scripts/doctor.mjs

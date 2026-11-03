@@ -1,0 +1,28 @@
+{
+  "$comment": "Copy to config.json (git-ignored) or let setup.mjs create it. CLI flags > environment > this file > built-in defaults.",
+  "profile": {
+    "name": "rescue",
+    "ui": "minimal"
+  },
+  "server": {
+    "host": "127.0.0.1",
+    "port": 3080,
+    "trustedHosts": [],
+    "openBrowser": false
+  },
+  "kernel": {
+    "source": "npm",
+    "vendorDir": "",
+    "existing": ""
+  },
+  "capabilities": {
+    "shell": "auto",
+    "ui": "auto",
+    "terminal": "auto",
+    "image": "auto"
+  },
+  "report": {
+    "promptSection": true,
+    "command": true
+  }
+}

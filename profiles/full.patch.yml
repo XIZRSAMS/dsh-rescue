@@ -1,0 +1,27 @@
+# dsh-rescue · full overlay 模板
+#
+# setup.mjs 会把这份模板渲染成 runtime/full.patch.yml：官方行保持 false，
+# 再把**实际安装**的第三方装饰行追加成 false。start.cmd --ui full 用 --patch
+# 传入渲染后的那份，避免对未安装的插件行产生 "entry not found" 噪音。
+#
+# 覆盖 rescue-degraded 会替换整个 config，所以下面重述了全部字段。
+
+- id: rescue-degraded
+  name: 'dsh-plugin-degraded'
+  config:
+    shell: auto
+    ui: full
+    terminal: auto
+    image: auto
+    report:
+      promptSection: true
+      command: true
+    server:
+      allowRemote: false
+    client:
+      statusBar: true
+
+- id: ui-sidebar-documentpreview
+  disabled: false
+- id: ui-sidebar-browser
+  disabled: false

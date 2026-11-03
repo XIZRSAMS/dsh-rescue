@@ -1,0 +1,10 @@
+{
+  "$comment": "Single upstream version source. upgrade.mjs only edits this file, then re-runs setup.",
+  "kernelPackage": "@deepseek-ai/dsh",
+  "kernelVersion": "0.2.0-rc.2",
+  "nodeVersion": "22.20.0",
+  "pnpmVersion": "11.7.0",
+  "rescueVersion": "0.1.0",
+  "verifiedAt": "2026-11-03",
+  "notes": "Verified against dsh 0.2.0-rc.2 (web profile: dsh-base + dsh-web-app). See docs/compat.md."
+}

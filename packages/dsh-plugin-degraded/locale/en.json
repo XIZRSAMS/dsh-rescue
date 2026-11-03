@@ -1,0 +1,4 @@
+{
+  "title": "Rescue / degraded mode",
+  "description": "Probes shell, PTY, UI decoration and image preview, hides what this host cannot run, and reports why. Every switch is reversible."
+}

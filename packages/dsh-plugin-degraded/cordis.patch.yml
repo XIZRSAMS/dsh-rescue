@@ -1,0 +1,20 @@
+# dsh-plugin-degraded — bundle patch.
+#
+# One row mounts the plugin. Every switch defaults to `auto`; a later patch
+# layer (profiles/web-desktop.patch.yml) may override this row's config, but a
+# patch replaces the WHOLE config object, so that layer must restate every key.
+- insert:
+    - id: rescue-degraded
+      name: 'dsh-plugin-degraded'
+      config:
+        shell: auto
+        ui: auto
+        terminal: auto
+        image: auto
+        report:
+          promptSection: true
+          command: true
+        server:
+          allowRemote: false
+        client:
+          statusBar: true

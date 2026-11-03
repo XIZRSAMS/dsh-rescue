@@ -1,0 +1,31 @@
+{
+  "$comment": "package name → Loader row id for third-party decoration plugins. setup.mjs only emits `disabled` rows for packages that are actually installed, so a default profile produces no 'entry not found' noise.",
+  "decorations": [
+    { "package": "@dsh-external/dsh-client-ui-skin-frutiger-aero", "rowId": "ui-skin-frutiger-aero", "label": "Frutiger Aero 皮肤" },
+    { "package": "@linxin666/dsh-client-ui-skin-blue-fantasy", "rowId": "ui-skin-blue-fantasy", "label": "蓝幻想皮肤" },
+    { "package": "@linxin666/dsh-client-ui-skin-dragon-heir", "rowId": "ui-skin-dragon-heir", "label": "龙嗣皮肤" },
+    { "package": "@linxin666/dsh-client-ui-skin-miku", "rowId": "ui-skin-miku", "label": "初音皮肤" },
+    { "package": "@linxin666/dsh-client-ui-skin-minecraft", "rowId": "ui-skin-minecraft", "label": "Minecraft 皮肤" },
+    { "package": "@linxin666/dsh-client-ui-skin-qq98", "rowId": "ui-skin-qq98", "label": "QQ98 皮肤" },
+    { "package": "@linxin666/dsh-client-ui-skin-ths", "rowId": "ui-skin-ths", "label": "THS 皮肤" },
+    { "package": "@linxin666/dsh-client-ui-skin-trading", "rowId": "ui-skin-trading", "label": "交易皮肤" },
+    { "package": "@linxin666/dsh-client-ui-skin-whale-song", "rowId": "ui-skin-whale-song", "label": "鲸歌皮肤" },
+    { "package": "@linxin666/dsh-client-ui-skin-xp", "rowId": "ui-skin-xp", "label": "XP 皮肤" },
+    { "package": "@smalltailqwq/dsh-client-ui-skin-deep-whale-manager", "rowId": "ui-skin-deep-whale-manager", "label": "深鲸皮肤" },
+    { "package": "@smalltailqwq/dsh-client-ui-skin-maid-atelier", "rowId": "ui-skin-maid-atelier", "label": "女仆工坊皮肤" },
+    { "package": "@smalltailqwq/dsh-client-ui-skin-orca-link", "rowId": "ui-skin-orca-link", "label": "虎鲸皮肤" },
+    { "package": "@dsh-external/dsh-client-ui-skin-deep-whale-day-night", "rowId": "ui-skin-deep-whale-day-night", "label": "深鲸昼夜皮肤" },
+    { "package": "@ha-na-bi/dsh-client-ui-custom", "rowId": "ui-custom", "label": "自定义皮肤" },
+    { "package": "dsh-client-liang-intensity-skin", "rowId": "liang-intensity-skin", "label": "亮度皮肤" },
+    { "package": "dsh-theme-endfield", "rowId": "theme-endfield", "label": "Endfield 主题" },
+    { "package": "@deepseek-ai/dsh-skin-switch", "rowId": "skin-switch", "label": "皮肤切换" },
+    { "package": "dsh-plugin-wallpaper-engine", "rowId": "dsh-plugin-wallpaper-engine", "label": "壁纸引擎" },
+    { "package": "dsh-pet", "rowId": "dsh-pet", "label": "桌面宠物" },
+    { "package": "dsh-whale-widget", "rowId": "dsh-whale-widget", "label": "余额小鲸鱼" },
+    { "package": "meow-smooth", "rowId": "meow-smooth", "label": "平滑动效" },
+    { "package": "picturereader", "rowId": "picturereader", "label": "看图" },
+    { "package": "dsh-composer-dynamic-island", "rowId": "dsh-composer-dynamic-island", "label": "灵动岛" },
+    { "package": "@nagi-ovo/dsh-visualize", "rowId": "dsh-visualize", "label": "可视化卡片" },
+    { "package": "dsh-unified-market", "rowId": "unified-market", "label": "插件市场" }
+  ]
+}
