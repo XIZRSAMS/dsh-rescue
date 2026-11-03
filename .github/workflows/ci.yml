@@ -20,6 +20,8 @@ jobs:
         run: node --test packages/dsh-plugin-degraded/test/*.test.mjs
       - name: repository tests
         run: node --test test/profile.test.mjs test/setup.test.mjs test/privacy.test.mjs
+      - name: A-side unit tests
+        run: node --test scripts/a/test/*.test.mjs
       - name: privacy gate (strict)
         run: node scripts/privacy-scan.mjs --strict
 

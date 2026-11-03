@@ -51,19 +51,39 @@ PE 的系统盘 `X:` 是内存盘，重启即丢、空间很小。因此：
 
 复核方法（离线可做）：用 PE 导入表解析脚本检查二进制，而不是靠安装器报错猜。
 
-## 启动一次的最短路径
+## 便携运行时怎么落地（A 版）
 
 ```sh
 # 在有网的机器上准备好（一次）
-node scripts/setup.mjs --kernel vendor --vendor-dir D:\kernels\0.2.0-rc.2
+node scripts/a/provision.mjs --kernel npm          # 或 --kernel vendor --vendor-dir <tgz 目录>
 
-# 复制整个 dsh-rescue 目录（含 runtime/as 与 node 运行时）到 U 盘
+# 全链路验证（可选，生成 runtime/logs 下的 probe/boot/matrix/portable/summary）
+node scripts/a/run.mjs --all
+```
+
+落点固定为：
+
+- `runtime/node/node.exe`（规范位置，两个 start.cmd 都认）与 `runtime/node.exe`
+  （同一 inode 的硬链接，兼容字面路径）
+- `runtime/node_modules/@deepseek-ai/dsh`（npm/vendor/existing 三种来源都会落到这里）
+- profile 里的 `dsh-plugin-degraded` 会被实体化（junction → 真目录），否则整个目录
+  拷到 U 盘、盘符一变，链接就断了
+
+> `runtime/start.cmd` 由 `setup.mjs` 生成，里面写的是
+> `%~dp0runtime\node\node.exe`，而 `%~dp0` 已经是 `runtime\`，于是多了一层。
+> 这是 B 版生成器的缺陷，A 版不改生成物：**便携启动一律用仓库根 `start.cmd`**。
+> `provision.mjs` 会把这条缺陷写进 `runtime/logs/manifest.json` 的 warnings。
+
+## 启动一次的最短路径
+
+```sh
+# 复制整个 dsh-rescue 目录（含 runtime/ 与 node 运行时）到 U 盘
 # 在 PE 里：
 E:\dsh-rescue\start.cmd --host 192.168.1.20
 ```
 
 `start.cmd` 会优先使用 `runtime\node\node.exe`（如果存在），否则用 PATH 上的 `node`。
-PE 里通常没有 `node`，所以把 `node.exe` 放到 `runtime\node\`。
+PE 里通常没有 `node`，所以 `runtime\node\` 必须由 `provision.mjs` 填好。
 
 ## 已知限制
 

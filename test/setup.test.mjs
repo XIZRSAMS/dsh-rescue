@@ -6,16 +6,25 @@ import { join } from 'node:path'
 
 import { REPO_ROOT, RUNTIME_DIR } from '../scripts/_shared.mjs'
 
-// setup.mjs writes runtime/last-setup.json on every run; keep the developer's
-// real snapshot intact so a test run cannot leave a dead .test-tmp path behind.
-const LAST_SETUP = join(RUNTIME_DIR, 'last-setup.json')
-const lastSetupBackup = existsSync(LAST_SETUP) ? readFileSync(LAST_SETUP) : null
+// setup.mjs renders most of runtime/ on every run (launcher, overlays, snapshot).
+// Keep the developer's real files intact so a test run cannot leave a dead
+// .test-tmp home or a test-profile launcher behind.
+const GENERATED = ['start.cmd', 'start.sh', 'full.patch.yml', 'last-setup.json', 'capabilities.json']
+const generatedBackup = new Map(
+  GENERATED.map((name) => {
+    const path = join(RUNTIME_DIR, name)
+    return [name, existsSync(path) ? readFileSync(path) : null]
+  }),
+)
 process.on('exit', () => {
-  try {
-    if (lastSetupBackup) writeFileSync(LAST_SETUP, lastSetupBackup)
-    else if (existsSync(LAST_SETUP)) unlinkSync(LAST_SETUP)
-  } catch {
-    /* best effort */
+  for (const [name, buffer] of generatedBackup) {
+    const path = join(RUNTIME_DIR, name)
+    try {
+      if (buffer) writeFileSync(path, buffer)
+      else if (existsSync(path)) unlinkSync(path)
+    } catch {
+      /* best effort */
+    }
   }
 })
 

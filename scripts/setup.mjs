@@ -198,8 +198,8 @@ const startCmd = [
   `set "DSH_RESCUE_VERSION=${versionInfo.kernelVersion}"`,
   'if not defined DSH_RESCUE_UI set "DSH_RESCUE_UI=minimal"',
   'set "NODE_EXE=node"',
-  'if exist "%~dp0runtime\\node\\node.exe" set "NODE_EXE=%~dp0runtime\\node\\node.exe"',
-  '"%NODE_EXE%" "%~dp0scripts\\entry.mjs" %*',
+  'if exist "%~dp0node\\node.exe" set "NODE_EXE=%~dp0node\\node.exe"',
+  '"%NODE_EXE%" "%~dp0..\\scripts\\entry.mjs" %*',
   'exit /b %ERRORLEVEL%',
   '',
 ].join('\r\n')

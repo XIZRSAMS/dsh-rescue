@@ -57,7 +57,8 @@ Host 侧通过 `ctx.provide('rescue', { capabilities, policy, report(), json(), 
 暴露快照；两条 HTTP 路由返回同一份 `renderJson()` 脱敏结果：
 `/api/dsh-rescue/capabilities`（走 `/api` 的 cookie 信任边界，供浏览器半边）与
 `/dsh-rescue/capabilities.json`（仅 loopback，供 `verify --boot` 与诊断）。
-A 版 launcher 的 `src/probe.mjs` 必须与 `Capabilities` 同名同义，`ui.preset` 两侧一致。
+A 版 launcher（`src/launch.mjs`）不建第二套探测：`scripts/a/probe.mjs` 直接复用
+`scripts/_probe.mjs` → `lib/probe.js`，字段与 `Capabilities` 同名同义，`ui.preset` 两侧一致。
 
 ### terminal 为什么是三态
 

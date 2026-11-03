@@ -6,6 +6,23 @@
 
 ## [Unreleased]
 
+### Added
+
+- A 版便携运行时与验证流水线：`src/launch.mjs`（接管 entry：四层配置解析、
+  kernel 定位、`--patch` overlay、进程与信号转发）、`scripts/a/provision.mjs`
+  （拷 node、装 kernel、调 setup、实体化插件 junction、写 manifest）、
+  P1 `probe` / P4 `boot` / P5 `matrix` / `portable-check` / P6 `pe-build` /
+  `run` 总编排，日志统一落 `runtime/logs`。
+- `scripts/a/test`：启动参数、kernel 候选顺序（与 fallback 同步）、probe 记录校验、
+  矩阵分类的纯逻辑测试。
+- README / docs/pe-notes / docs/architecture 补齐 A 版说明；CI 增加 A 版测试步骤。
+
+### Fixed
+
+- 冷启动不再自动打开浏览器：向内核转发 `--no-open`（0.2.0-rc.2 默认会开）。
+- 子进程的 `TEMP`/`TMP` 指向 `runtime/tmp`，宿主临时目录不可写时不再出现
+  `dsh-spill-local` 的 EPERM 警告。
+
 ## [0.1.0] - 2026-11-03
 
 首个可用版本，目标内核 `@deepseek-ai/dsh@0.2.0-rc.2`。
