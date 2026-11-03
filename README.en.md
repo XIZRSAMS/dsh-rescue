@@ -108,6 +108,21 @@ a failing disk), and `/MIR` must never be used (it deletes files on the destinat
 
 ## 🚀 Quick start
 
+### Easiest: grab the prebuilt bundle
+
+Don't want to build it? Get **`dsh-rescue-1.0.0-winpe.zip`** (362 MB) from
+[Releases](https://github.com/XIZRSAMS/dsh-rescue/releases), unzip, then:
+
+1. Copy the `pure` folder to your USB stick (renaming to `dsh-pure` is optional)
+2. Edit `apikey.txt` and set `DEEPSEEK_API_KEY=sk-your-key`
+3. Boot the PE and double-click `start-dsh.cmd`
+
+The bundle already contains node, the kernel, PowerShell 7, the browser and six skills —
+nothing needs to be installed or downloaded.
+
+> Note: 28 .NET reference assemblies under `pwsh/ref/` were skipped at packing time
+> (the files were locked). They are compile-time references and are not needed at runtime.
+
 ### Plugin only
 
 ```sh

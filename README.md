@@ -105,6 +105,20 @@ AI 必须联网才有意义，所以这条路要么先注入网卡驱动（`dism
 
 ## 🚀 快速开始
 
+### 最省事：直接下载成品包
+
+不想自己构建？到 [Releases](https://github.com/XIZRSAMS/dsh-rescue/releases) 下载
+**`dsh-rescue-1.0.0-winpe.zip`**（362 MB），解压后得到 `pure` 目录：
+
+1. 把 `pure` 整个拷到 U 盘，改名为 `dsh-pure`（可选，脚本按相对路径找，不改也行）
+2. 打开 `apikey.txt`，填上 `DEEPSEEK_API_KEY=sk-你的key`
+3. 进 WinPE，双击 `start-dsh.cmd`
+
+包里已经有 node、内核、PowerShell 7、浏览器和六个技能，不需要联网安装任何东西。
+
+> 说明：zip 里 `pwsh/ref/` 下的 28 个 .NET 引用程序集在打包时被跳过（文件被占用），
+> 那是编译期用的引用程序集，运行时不需要，不影响使用。
+
 ### 路线一：只要插件（装进现有 DSH）
 
 ```sh
