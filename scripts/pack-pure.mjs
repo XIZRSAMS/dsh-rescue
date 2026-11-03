@@ -65,6 +65,9 @@ writeFileSync(join(profileDir, 'cordis.yml'), '[]\n')
 copy(join(REPO_ROOT, 'launcher', 'pe-start.cmd'), join(out, 'start-dsh.cmd'))
 copy(join(REPO_ROOT, 'launcher', 'PE-测试流程.txt'), join(out, '测试流程.txt'))
 
+/* PE rescue skills land in $DSH_HOME/skills, the provider's default root. */
+copy(join(REPO_ROOT, 'launcher', 'skills'), join(out, 'runtime', 'home', 'skills'))
+
 
 writeFileSync(
   join(out, 'pe-probe.cmd'),

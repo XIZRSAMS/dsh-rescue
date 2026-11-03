@@ -1,29 +1,24 @@
 ============================================
-dsh-pure · PE 使用说明（2026-11-03 v7 · 正式版）
+dsh-pure · PE 使用说明（2026-11-03 v8）
 ============================================
 
-【这一版的 shell 通道】
-  包里带的是真 PowerShell 7.6.9（自包含，不需要系统装 .NET）。
-  Get-ChildItem / 管道 / Select-Object / $env:XXX 全部可用。
+【这一版新增：6 个维修专精技能】
+  装在 runtime\home\skills\，AI 会根据你说的问题自动挑对应的流程：
+
+    pe-triage            分诊：先摸清硬盘/系统盘/引导模式，再决定怎么修
+    pe-boot-repair       引导修复：bootrec / bcdboot / diskpart 全套
+    pe-disk-repair       磁盘修复：只读、chkdsk、分区表、SMART
+    pe-data-rescue       数据抢救：先只读拷贝，再谈修盘（含 robocopy 参数陷阱）
+    pe-offline-registry  离线注册表：删坏服务、改启动项，含加载/卸载 hive
+    pe-password-reset    本地密码重置：utilman 替换法 + 恢复步骤
+
+  用法：直接说「电脑开不了机」「蓝屏 0xc000000f」「密码忘了」这类话就行。
 
 【启动：三步】
   1. 双击 G:\dsh-pure\start-dsh.cmd
-  2. 看三行输出都对：
-       [dsh] credentials: loaded from ...apikey.txt
-       [dsh] pwsh: G:\dsh-pure\pwsh\pwsh.exe
-       [dsh] url: http://127.0.0.1:3080/?token=...
-  3. 浏览器自动打开，发消息让 AI 跑命令
-
-【已经完整验证的】
-  - node v22.20.0 在 PE 里运行正常
-  - dsh 内核 / 界面 / 会话 / 消息 / 联网 全部正常
-  - Pale Moon 缺的 AbortSignal.any 已 polyfill
-  - PowerShell 7.6.9 可用（命令能真正执行）
+  2. 看三行：credentials / pwsh / url
+  3. 浏览器自动打开
 
 【不要做的事】
-  × 不要删 pwsh 目录（删了 AI 就只能读写文件）
+  × 不要删 skills 或 pwsh 目录
   × 不要动 G:\dsh-pure 以外的目录
-  × 不要改分辨率
-
-【出问题看哪里】
-  启动器屏幕输出 + G:\dsh-pure\runtime\logs\web.log
