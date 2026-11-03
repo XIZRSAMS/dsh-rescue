@@ -62,6 +62,33 @@ No fork, no kernel patches: everything is bundle patch / profile patch / `--patc
 
 ---
 
+## 🖥️ Platform support
+
+| Platform | Status | Notes |
+|---|---|---|
+| **Windows PE** | ✅ Supported | Primary target. node + kernel + PowerShell 7 + browser all bundled; verified on USM/MicroPE |
+| **Windows 10 / 11** | ✅ Supported | Tray launcher, double-click and go; the degradation plugin works on a healthy system too |
+| **Linux** | 🚧 Planned | node and the kernel are cross-platform and the probe already branches per platform; what is missing is Live USB packaging |
+| **macOS** | 🚧 Planned | The path exists (Darwin prebuilds are already in the dependency tree) but signing and Apple Silicon make it lowest priority |
+| **Windows RE** | 🔜 Future | Same lineage as PE so it should run; the blocker is that WinRE ships almost no NIC drivers — networking has to be solved first |
+
+> "Planned" means a design judgement only: no implementation and no promised date.
+> "Future" has had a feasibility pass; see below.
+
+### Windows RE (future)
+
+WinRE shares the PE lineage, so node, kernel, PowerShell and the browser should run as-is.
+It is also far easier to reach than a PE stick: every Windows 10/11 ships one, F8 gets you in.
+
+The real blocker is **networking**: WinRE carries only basic storage drivers and almost no
+NIC drivers (wireless especially). The agent is useless offline, so this path needs either
+injected drivers (`dism /add-driver`) or an acceptance that "network first, then WinRE".
+
+Quick check: open the WinRE command prompt and run `ipconfig`. An address means it is feasible;
+an empty list means a driver problem.
+
+---
+
 ## 🚑 Six skills
 
 | Skill | When |

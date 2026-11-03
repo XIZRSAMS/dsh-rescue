@@ -36,6 +36,12 @@
   `dsh-plugin-degraded` 插件（Host + Web Client 双半，零运行时依赖）、
   A 版便携运行时、验收流水线与四层配置解析。
 
+### 🗺️ 路线图
+
+- **Linux**（计划中）：Live USB 形态，复用现有内核与技能
+- **macOS**（计划中）：受签名与 Apple Silicon 限制，优先级最低
+- **Windows RE**（未来版本）：与 PE 同源，先解决 WinRE 的网卡驱动
+
 ---
 
 <div align="center">
