@@ -15,6 +15,8 @@
 
 系统起不来的时候，PE 里没有浏览器的时候，连 shell 都没有的时候——它仍然在。
 
+**📌 当前版本：v1.0.0** · [更新日志](./CHANGELOG.md)
+
 [English](./README.en.md) · [完整技术说明](./README.zh.md) · [PE 部署手册](./docs/pe-runbook.md)
 
 <br/>
@@ -145,6 +147,16 @@ robocopy dist\pure G:\dsh-pure /E
 - English: [README.en.md](./README.en.md)
 - 完整参数与验证说明：[README.zh.md](./README.zh.md)
 - PE 部署手册：[docs/pe-runbook.md](./docs/pe-runbook.md)
+
+---
+
+## 📝 更新日志
+
+**当前版本：v1.0.0（2026-11-04）**
+
+首个完整版本：WinPE 成品包、六个救援技能、零依赖启动器、中英双语、小屏适配。
+
+完整记录见 [CHANGELOG.md](./CHANGELOG.md)。
 
 ---
 

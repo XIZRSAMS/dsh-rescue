@@ -15,6 +15,8 @@
 
 When Windows won't boot. When the PE has no browser. When even the shell is gone — it still answers.
 
+**📌 Current version: v1.0.0** · [Changelog](./CHANGELOG.md)
+
 [中文主页](./README.md) · [Full reference](./README.zh.md) · [PE runbook](./docs/pe-runbook.md)
 
 <br/>
@@ -136,6 +138,17 @@ Inside the PE, run `start-dsh.cmd`; it prints three lines:
 | `AbortSignal.any is not a function` | Old browser engine | The packer injects the polyfill; otherwise use a newer browser |
 | No network | Missing NIC driver | Install the driver or use ethernet; `net-check.cmd` diagnoses |
 | `Get-ChildItem` not recognised | cmd shim instead of real pwsh | Make sure `pwsh/` exists and is on PATH |
+
+---
+
+## 📝 Changelog
+
+**Current version: v1.0.0 (2026-11-04)**
+
+First complete release: the WinPE bundle, six rescue skills, a dependency-free launcher,
+bilingual docs, small-screen support.
+
+See [CHANGELOG.md](./CHANGELOG.md) for the full history.
 
 ---
 
