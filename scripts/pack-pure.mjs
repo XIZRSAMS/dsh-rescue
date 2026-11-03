@@ -62,6 +62,7 @@ writeFileSync(join(profileDir, 'cordis.yml'), '[]\n')
 
 /* The PE launcher lives in launcher/pe-start.cmd so it is edited in one place. */
 copy(join(REPO_ROOT, 'launcher', 'pe-start.cmd'), join(out, 'start-dsh.cmd'))
+copy(join(REPO_ROOT, 'launcher', 'PE-测试流程.txt'), join(out, '测试流程.txt'))
 
 
 writeFileSync(
