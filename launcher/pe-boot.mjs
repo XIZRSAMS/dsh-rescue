@@ -1,0 +1,114 @@
+#!/usr/bin/env node
+/**
+ * dsh-pure · PE boot script.
+ *
+ * The WinPE shell in this environment has no ping/ipconfig/timeout, so the
+ * launcher is plain Node: start the kernel, stream its output to web.log, watch
+ * for the token, poll the loopback URL, then hand the URL to a browser.
+ */
+
+import { spawn } from 'node:child_process'
+import { createWriteStream, existsSync, mkdirSync } from 'node:fs'
+import { dirname, join } from 'node:path'
+import { fileURLToPath } from 'node:url'
+
+const ROOT = dirname(fileURLToPath(import.meta.url))
+const NODE = process.execPath
+const KERNEL = join(ROOT, 'runtime', 'node_modules', '@deepseek-ai', 'dsh', 'lib', 'bin.js')
+const HOME = join(ROOT, 'runtime', 'home')
+const TMP = join(ROOT, 'runtime', 'tmp')
+const LOGDIR = join(ROOT, 'runtime', 'logs')
+const PORT = Number(process.env.DSH_PURE_PORT || 3080)
+
+mkdirSync(TMP, { recursive: true })
+mkdirSync(LOGDIR, { recursive: true })
+const logPath = join(LOGDIR, 'web.log')
+const logFile = createWriteStream(logPath, { flags: 'w' })
+
+if (!existsSync(KERNEL)) {
+  console.error('[dsh] kernel not found: ' + KERNEL)
+  process.exit(2)
+}
+
+console.log('[dsh] root   = ' + ROOT)
+console.log('[dsh] node   = ' + NODE)
+console.log('[dsh] home   = ' + HOME)
+console.log('[dsh] log    = ' + logPath)
+console.log('[dsh] starting kernel on 127.0.0.1:' + PORT + ' ...')
+
+const child = spawn(
+  NODE,
+  [KERNEL, '--profile', 'web', '--host', '127.0.0.1', '--port', String(PORT), '--no-open'],
+  {
+    cwd: ROOT,
+    env: { ...process.env, DSH_HOME: HOME, TMP, TEMP: TMP },
+    stdio: ['ignore', 'pipe', 'pipe'],
+  },
+)
+
+let token = ''
+const seen = []
+function feed(chunk) {
+  const text = chunk.toString()
+  logFile.write(text)
+  process.stdout.write(text)
+  seen.push(text)
+  if (!token) {
+    const match = text.match(/token=([A-Za-z0-9_-]{8,})/)
+    if (match) token = match[1]
+  }
+}
+child.stdout.on('data', feed)
+child.stderr.on('data', feed)
+
+const deadline = Date.now() + 120000
+async function waitReady() {
+  while (Date.now() < deadline) {
+    if (child.exitCode !== null) return false
+    try {
+      const controller = new AbortController()
+      const timer = setTimeout(() => controller.abort(), 1500)
+      const response = await fetch('http://127.0.0.1:' + PORT + '/', {
+        signal: controller.signal,
+        redirect: 'manual',
+      })
+      clearTimeout(timer)
+      if (response.status > 0) return true
+    } catch {
+      /* not up yet */
+    }
+    await new Promise((resolve) => setTimeout(resolve, 500))
+  }
+  return false
+}
+
+function openBrowser(url) {
+  const palemoon = join(ROOT, 'browser', 'Palemoon-Portable.exe')
+  const command = existsSync(palemoon) ? '"' + palemoon + '" "' + url + '"' : '"' + url + '"'
+  spawn('cmd', ['/c', 'start', '""', command], { stdio: 'ignore', detached: true, windowsHide: true }).unref()
+  return existsSync(palemoon) ? 'bundled Pale Moon' : 'default browser'
+}
+
+const ready = await waitReady()
+if (!ready) {
+  console.error('[dsh] kernel did not answer in 120s. last output:')
+  console.error(seen.join('').split(/\r?\n/).slice(-20).join('\n'))
+  console.error('[dsh] full log: ' + logPath)
+  process.exit(1)
+}
+
+const url = 'http://127.0.0.1:' + PORT + '/' + (token ? '?token=' + token : '')
+console.log('[dsh] url: ' + url)
+console.log('[dsh] opening ' + openBrowser(url))
+
+child.on('exit', (code) => {
+  console.log('[dsh] kernel exited with ' + code)
+  process.exit(code === null ? 1 : code)
+})
+
+for (const signal of ['SIGINT', 'SIGTERM']) {
+  process.on(signal, () => {
+    try { child.kill(signal) } catch { /* gone */ }
+    process.exit(0)
+  })
+}
