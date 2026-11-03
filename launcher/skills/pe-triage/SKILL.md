@@ -38,6 +38,26 @@ Test-Path 'X:\boot\bcd'                            # Legacy
 
 两个都看，有的机器两种引导文件都在。
 
+## 3.5 PE 里 WMI 常常没启动
+
+`Get-CimInstance` 报 `Microsoft.Management.Infrastructure.Native 初始化失败` 时，先试着启动服务：
+
+~~~cmd
+net start winmgmt
+~~~
+
+起不来的话别硬扛，用这些**不走 WMI** 的路径：
+
+~~~powershell
+Get-Partition / Get-Volume / Get-Disk        # Storage 模块，独立于 WMI
+Get-PhysicalDisk -ErrorAction SilentlyContinue
+reg query "HKLM\HARDWARE\DEVICEMAP\Scsi"
+reg query "HKLM\SYSTEM\CurrentControlSet\Enum\IDE"
+diskpart /s list.txt                          # 脚本方式列盘
+~~~
+
+拿不到的信息（电池、温度、显卡详细型号）就先跳过，不要为了凑信息反复折腾。
+
 ## 4. 系统版本
 
 ~~~powershell
