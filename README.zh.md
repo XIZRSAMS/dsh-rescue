@@ -105,6 +105,22 @@ start.cmd --ui full --open                 # 顺便打开浏览器
 `start.cmd` / `start.sh` 只是转发壳，所有解析都在 `scripts/entry.mjs`。
 `0.0.0.0` 会被内核主动拒绝，用本机内网 IP。
 
+### 启动器与打包
+
+```sh
+node scripts/build-launcher.mjs   # csc 编译 dist/dsh-rescue.exe（托盘 + 自动开浏览器 + 抓 token）
+node scripts/pack-portable.mjs    # 组装 dist/portable（可整包拷 U 盘，约 624MB）
+```
+
+`dist/dsh-rescue.exe` 是 GUI 子系统程序：双击后自己找 `runtime\node\node.exe`、挑空闲端口、
+把 `TMP`/`TEMP` 钉到 `runtime\tmp`（PE 里 %TMP% 常不可写）、轮询
+`/dsh-rescue/capabilities.json`，拿到 200 后从 stdout 抓 `?token=` 再打开浏览器。
+托盘菜单有「打开界面 / 复制地址 / 打开日志目录 / 退出」。
+
+`dist/portable` 是可直接拷到 U 盘的目录：内置 node + kernel + 已渲染的 rescue profile + 插件，
+不依赖任何本机路径；`runtime/home` 里的凭据和会话不会被复制进去。
+WinPE 没有 .NET，启动器用不了，改用同目录的 `start.cmd`（纯 cmd + node）。
+
 ---
 
 ## 会被降级的能力
