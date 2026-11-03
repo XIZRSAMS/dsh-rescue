@@ -1,0 +1,29 @@
+name: 功能建议 / Feature request
+description: 希望增加的能力，或希望支持的平台
+title: "[Feature] "
+labels: ["enhancement"]
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: 你想解决什么问题
+      description: 先说场景，再说方案
+    validations:
+      required: true
+  - type: textarea
+    id: idea
+    attributes:
+      label: 你的想法
+  - type: dropdown
+    id: platform
+    attributes:
+      label: 涉及平台
+      options:
+        - Windows PE
+        - Windows 10 / 11
+        - Windows RE（路线图）
+        - Linux（路线图）
+        - macOS（路线图）
+        - 通用
+    validations:
+      required: true

@@ -1,0 +1,59 @@
+name: PE 兼容性报告 / PE compatibility
+description: 报告在某台机器、某个 PE 上跑起来（或跑不起来）的细节。这是项目最需要的数据。
+title: "[PE] "
+labels: ["pe-compat"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        感谢反馈！这张表的目标是让其他人**照着你的配置也能复现**。
+        填得越具体，越可能被修。
+  - type: input
+    id: pe
+    attributes:
+      label: 你用的 PE
+      description: 名称 + 版本，例如「优启通 23H2 全能版」「微PE 2.3」「原版 ADK WinPE 10.0.22631」
+      placeholder: 优启通 23H2
+    validations:
+      required: true
+  - type: input
+    id: hardware
+    attributes:
+      label: 机器信息
+      description: 主板/机型、CPU、网卡芯片（有线/无线）
+      placeholder: ThinkPad T480 / i5-8250U / Intel I219-V 有线 + AX210 无线
+    validations:
+      required: true
+  - type: dropdown
+    id: stage
+    attributes:
+      label: 卡在哪一步
+      options:
+        - 探针 pe-probe.cmd
+        - 内核启动（start-dsh.cmd 报错）
+        - 浏览器没打开 / 打开是空白
+        - 界面能开但「重新连接中」
+        - 能发消息但报 transport failed
+        - 能对话但 AI 执行不了命令
+        - 全部正常（来报个成功案例）
+    validations:
+      required: true
+  - type: input
+    id: node
+    attributes:
+      label: node -v 的输出
+      description: 在 PE 里跑 `G:\dsh-pure\runtime\node\node.exe -v`
+      placeholder: v22.20.0
+  - type: textarea
+    id: logs
+    attributes:
+      label: 关键日志
+      description: |
+        `runtime\logs\web.log` 的最后 20 行，或 `logs\pe-probe.txt` 的内容。
+        浏览器报错请贴 F12 控制台第一屏。
+      render: text
+  - type: textarea
+    id: extra
+    attributes:
+      label: 补充说明
+      description: 其它你觉得有用的信息（是否插网线、是否用代理、PE 有没有精简掉什么）

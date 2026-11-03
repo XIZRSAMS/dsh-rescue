@@ -1,0 +1,35 @@
+name: Bug 报告 / Bug report
+description: 功能不正常、报错、崩溃
+title: "[Bug] "
+labels: ["bug"]
+body:
+  - type: textarea
+    id: what
+    attributes:
+      label: 发生了什么
+      description: 现象 + 你期望的结果
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: 复现步骤
+      placeholder: |
+        1. 双击 start-dsh.cmd
+        2. 等内核起来
+        3. 发消息「dir」
+        4. 看到 ...
+    validations:
+      required: true
+  - type: input
+    id: version
+    attributes:
+      label: 版本
+      description: Release 标签或 commit hash
+      placeholder: v1.0.0
+  - type: textarea
+    id: logs
+    attributes:
+      label: 日志
+      description: runtime\logs\web.log 或启动器屏幕输出
+      render: text

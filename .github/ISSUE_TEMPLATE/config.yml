@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: 部署手册 / Deployment guide
+    url: https://github.com/XIZRSAMS/dsh-rescue/blob/main/docs/pe-runbook.md
+    about: 先看这里，大部分「跑不起来」都在手册的已知限制里
+  - name: 完整的参数与验证说明
+    url: https://github.com/XIZRSAMS/dsh-rescue/blob/main/README.zh.md
+    about: setup / verify / doctor 等命令的细节
