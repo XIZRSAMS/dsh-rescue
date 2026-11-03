@@ -17,6 +17,12 @@ When Windows won't boot. When the PE has no browser. When even the shell is gone
 
 [中文主页](./README.md) · [Full reference](./README.zh.md) · [PE runbook](./docs/pe-runbook.md)
 
+<br/>
+
+<img src="./assets/pe-desktop.png" alt="dsh-rescue running inside WinPE: the agent inspecting disks and WMI availability" width="720"/>
+
+<sub>↑ Real capture: inside WinPE, the agent audits its own environment — lists partitions, notices WMI is down, warns that E: and F: are too small for image backups</sub>
+
 </div>
 
 ---

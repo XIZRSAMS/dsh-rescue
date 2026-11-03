@@ -17,6 +17,12 @@
 
 [English](./README.en.md) · [完整技术说明](./README.zh.md) · [PE 部署手册](./docs/pe-runbook.md)
 
+<br/>
+
+<img src="./assets/pe-desktop.png" alt="dsh-rescue 在 WinPE 中运行：AI 正在分析磁盘分区与 WMI 可用性" width="720"/>
+
+<sub>↑ 实拍：WinPE 里，AI 正在自查环境——列出分区、发现 WMI 没启动、提醒 E: 和 F: 空间不够做镜像备份</sub>
+
 </div>
 
 ---
