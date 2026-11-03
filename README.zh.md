@@ -1,4 +1,7 @@
-# dsh-rescue · 中文说明
+# dsh-rescue · 完整技术说明
+
+> 想先了解这个项目在做什么，请看 [README.md](./README.md)（主页面）。
+> 本文件保留全部参数、验证命令与内核来源说明。
 
 [English](README.md)
 

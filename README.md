@@ -1,235 +1,162 @@
-# dsh-rescue
+<div align="center">
 
-A rescue/degraded-mode plugin and reproducible profile for [DeepSeek Harness](https://www.npmjs.com/package/@deepseek-ai/dsh).
+# 🚑 dsh-rescue
 
-Chinese version: [README.zh.md](README.zh.md)
+### DeepSeek Harness 的救援发行版
 
-DeepSeek Harness normally assumes a full desktop: PowerShell, a PTY, a GPU and a
-current browser. `dsh-rescue` keeps the **Web + CLI** surfaces usable when some of
-that is missing — WinPE, a stripped-down Windows install, a repair USB stick, or
-a machine whose shell is broken.
+> **任何时候的介入急救。**
+>
+> **Rescue that intervenes at any moment.**
 
-The project is two things:
+![版本](https://img.shields.io/badge/version-0.1.0-blue)
+![许可](https://img.shields.io/badge/license-MIT-green)
+![平台](https://img.shields.io/badge/platform-WinPE%20%7C%20Windows-8A2BE2)
+![话题](https://img.shields.io/badge/topic-dsh--plugin-brightgreen)
 
-1. **`dsh-plugin-degraded`** — a real DSH plugin (Host + Web Client halves) that
-   probes the machine, decides what to degrade, hides the tools that cannot work,
-   and reports why. Zero runtime dependencies.
-2. **A reproducible profile + scripts** — `scripts/setup.mjs` renders a profile
-   under `runtime/home`, installs the plugin, generates a launcher and validates
-   the composed tree. `scripts/upgrade.mjs` moves the kernel version by editing
-   one file.
+系统起不来的时候，PE 里没有浏览器的时候，连 shell 都没有的时候——它仍然在。
 
-Nothing here forks or patches DSH: everything is a bundle patch, a profile patch,
-or a `--patch` overlay.
+[English](./README.en.md) · [完整技术说明](./README.zh.md) · [PE 部署手册](./docs/pe-runbook.md)
 
-## Quick start
+</div>
 
-```sh
-git clone <this repo> dsh-rescue
-cd dsh-rescue
-node scripts/setup.mjs                 # render profile + install plugin (needs dsh on PATH)
-start.cmd                              # or: sh start.sh
-```
+---
 
-`setup.mjs` creates:
+## 🧭 它解决的是什么
 
-```
-runtime/home/profiles/rescue/{package.json,cordis.yml,cordis.patch.yml,pnpm-workspace.yaml}
-runtime/start.cmd   runtime/start.sh   runtime/capabilities.json
-```
+AI Agent 默认假设你有一台完好的电脑。可真正需要它的时候，往往正是电脑坏掉的那一刻：
+开不了机、蓝屏、分区表丢了、密码忘了、磁盘只剩 0.9GB。
 
-It refuses to write into the `DSH_HOME` of the session you are running it from.
-Use `--home <dir> --force` only when you really mean another location (for
-example an offline install on a USB stick).
+`dsh-rescue` 把这套东西塞进一个 16GB U 盘，插进任何一台机器，
+**不用装系统、不用装浏览器、不用装 PowerShell**，进 PE 就能开口问诊、动手修。
 
-### Options
+它做两件事：
 
-| Flag | Meaning |
-|---|---|
-| `--ui minimal\|full\|auto` | UI preset rendered into the profile layer (default `minimal`) |
-| `--home <dir>` | Rescue `DSH_HOME` (default `<repo>/runtime/home`) |
-| `--profile <name>` | Profile name under `DSH_HOME/profiles` (default `rescue`) |
-| `--kernel npm\|vendor\|existing` | Where the kernel comes from (see below) |
-| `--vendor-dir <dir>` | Directory of `*.tgz` kernel packages (offline installs) |
-| `--no-install` | Render files only; install nothing |
-| `--dry-run` | Print what would be written, write nothing |
-| `--force` | Allow a `--home` outside the repository |
+1. **一个正经的 DSH 插件**（`dsh-plugin-degraded`）——探测环境，缺什么关什么，并告诉你原因。
+2. **一个能直接用的 PE 成品包**（`dsh-pure`）——node、内核、浏览器、PowerShell、救援技能，全在里面。
 
-### Kernel sources
+不 fork、不改内核源码，全部走 bundle patch / profile patch / `--patch` overlay。
 
-```sh
-# 1. npm (needs network; provision installs, setup only resolves and finds)
-node scripts/a/provision.mjs --kernel npm
+---
 
-# 2. vendored tarballs (offline / PE)
-node scripts/a/provision.mjs --kernel vendor --vendor-dir D:\kernels\0.2.0-rc.2
+## ✨ 功能特性
 
-# 3. reuse an existing dsh installation
-node scripts/a/provision.mjs --kernel existing --existing "C:\path\to\dsh\node_modules\@deepseek-ai\dsh"
-```
-
-> `setup.mjs --kernel` only resolves the source and finds `dsh`; it never
-> installs. Installation lives in `scripts/a/provision.mjs` (next section).
-
-Vendored tarballs are never committed: `.gitignore` excludes `*.tgz`.
-
-### Portable runtime (A side)
-
-The A-side programs move Node and the kernel into `runtime/` and turn every
-acceptance step into a repeatable program:
-
-```sh
-node scripts/a/provision.mjs        # copy node.exe, install the kernel, render the profile
-node scripts/a/probe.mjs            # → runtime/logs/probe.json
-node scripts/a/boot.mjs             # → runtime/logs/boot.json (cold-start readyMs)
-node scripts/a/matrix.mjs           # → runtime/logs/matrix.json (degradation matrix)
-node scripts/a/portable-check.mjs   # boots start.cmd with no Node on PATH
-node scripts/a/pe-build.mjs         # PE pipeline (writes a skipped record without the ADK)
-node scripts/a/run.mjs --all        # all of the above + runtime/logs/summary.{json,md}
-```
-
-- Layout: `runtime/node/node.exe` (both start.cmd shims look here) and
-  `runtime/node_modules/@deepseek-ai/dsh`. `runtime/node.exe` is a hard link to
-  the same inode, so even the literal runtime/node.exe probe passes.
-- The plugin directory is materialised (junction → real directory); otherwise a
-  copy of the tree to another drive letter breaks the link.
-- `runtime/start.cmd` is generated by `setup.mjs` with `%~dp0node\node.exe` and
-  `%~dp0..\scripts\entry.mjs` (`%~dp0` already points at `runtime\`, so the entry
-  jumps one level up). Both launchers work standalone.
-- Cold start only probes the loopback `GET /dsh-rescue/capabilities.json`;
-  `/api/*` is behind the browser trust fence and answers 401 to a bare fetch.
-
-### Starting
-
-```sh
-start.cmd                                  # loopback only
-start.cmd --host 192.168.1.20              # reachable from a phone on the LAN
-start.cmd --host 192.168.1.20 --port 3080 --ui full
-start.cmd --ui full --open                 # open the browser too
-```
-
-`start.cmd` / `start.sh` are shims: all parsing lives in `scripts/entry.mjs`.
-`0.0.0.0` is rejected by the kernel itself, so use the machine's LAN address.
-
-## What gets degraded
-
-| Capability | Probe | Degraded behaviour |
+| | 特性 | 说明 |
 |---|---|---|
-| `shell` | `pwsh.exe` → `powershell.exe` → `cmd.exe` | tools `bash`/`pwsh` hidden when nothing exists |
-| `terminal` | terminal service presence; the Host-side backend list is diagnostics only | `terminal_*` tools hidden when the service is provably absent (`available: null` = unknown → no degradation) |
-| `ui` | WinPE / GPU / preset | decoration plugin rows disabled, `minimal` by default |
-| `image` | WinPE / GPU | `read_image` hidden, file preview rows disabled |
+| 🧰 | **六个救援技能** | 分诊、引导修复、磁盘修复、数据抢救、离线注册表、密码重置，AI 按症状自动选用 |
+| 🖥️ | **自带浏览器** | Pale Moon 便携版随包，PE 里双击就能看到界面，不需要手机 |
+| ⚡ | **自带 PowerShell 7** | 7.6.9 便携包，命令真能执行，不是演示 |
+| 🔌 | **零安装** | 整个目录拷到 U 盘即可，不写注册表、不装驱动 |
+| 🧠 | **环境自适应** | 探测 shell / PTY / GPU / 浏览器 / 可写盘，缺什么降什么 |
+| 🎨 | **小屏适配** | 1024×768 也能用：85% 渲染、隐藏书签栏、窗口卡在任务栏上方 |
+| 🌏 | **中英双语** | 界面与文档都双语，中文为主 |
+| 💾 | **可信可逆** | 所有降级都有开关，配置四层优先级，随时能开回来 |
 
-Every switch accepts `auto`, `on` or `off`; `on`/`off` always win over the probe
-and are reported as “config 强制开启/关闭”. Inspect the decision any time:
+---
 
-```
-/rescue            environment report (visible in the conversation)
-/rescue json       the raw payload
-/rescue refresh    re-probe (after installing a shell or PTY backend)
-/rescue tools      which tools are currently denied
-```
+## 🚑 六个技能，对症下药
 
-Settings → 救援模式 shows the same report, and a one-line badge appears only when
-something is actually degraded.
+| 技能 | 什么时候用 |
+|---|---|
+| `pe-triage` | 用户说「开不了机 / 蓝屏 / 找不到硬盘」——先用只读命令把现场摸清 |
+| `pe-boot-repair` | 黑屏光标、无限修复、`0xc000000f`、`0xc0000225`；含 UEFI 与 Legacy 两套 |
+| `pe-disk-repair` | 磁盘只读、文件系统报错、分区表异常、判断是不是坏道 |
+| `pe-data-rescue` | 盘还能读但系统进不去——先只读拷贝，再谈修盘 |
+| `pe-offline-registry` | 删坏服务、改启动项、修登录，含 hive 加载/卸载 |
+| `pe-password-reset` | 本机账户密码忘了，utilman 替换法 + 恢复步骤 |
 
-Two HTTP routes expose the same redacted payload:
+每份都写了前置条件、具体命令、**参数为什么这么选**和红线。比如 `robocopy` 必须带
+`/R:1 /W:1 /XJ`（默认重试一百万次，坏盘会卡死），`/MIR` 绝对不能用（会删目标端文件）。
 
-- `GET /api/dsh-rescue/capabilities` — what the browser half uses; behind the
-  normal `/api` trust fence (session cookie).
-- `GET /dsh-rescue/capabilities.json` — loopback-only, for `verify.mjs --boot`
-  and curl-style diagnosis, which have no session cookie.
+---
 
-## Minimal vs full
+## 🚀 快速开始
 
-`minimal` is the default and **fails closed**:
-
-- `profiles/minimal.patch.yml` statically disables the heavy official rows
-  (`ui-sidebar-documentpreview`, `ui-sidebar-browser`) and the common decoration
-  plugins (skins, wallpaper engine, pet, whale widget, motion, image viewer).
-- `profiles/full.patch.yml` is a `--patch` overlay that turns the same rows back
-  on and pins `ui: full` on the plugin row.
-
-Switch without reinstalling:
+### 路线一：只要插件（装进现有 DSH）
 
 ```sh
-node scripts/setup.mjs --ui full     # persistent: rewrites the profile layer
-start.cmd --ui full                   # per-run: adds the full overlay
+git clone <本仓库> dsh-rescue
+cd dsh-rescue
+node scripts/setup.mjs      # 渲染 profile + 安装插件
+node scripts/verify.mjs --all
 ```
 
-Performance budget for `minimal` (checked by `test/perf.test.mjs` against a
-running server): first screen < 2 s, resident JS heap < 400 MB, and no continuous
-animation (< 30 rAF frames in a 3 s sample).
-
-## Repository layout
-
-```
-packages/dsh-plugin-degraded/   the plugin (index.js, client.js, lib/*, tests)
-packages/dsh-shell-cmd/         optional cmd.exe shell backend (reserved)
-profiles/                       profile manifest + minimal/full patch layers
-src/launch.mjs                  A-side launcher (entry.mjs prefers it, falls back when absent)
-scripts/                        setup, upgrade, verify, doctor, privacy-scan, entry
-scripts/a/                      portable runtime (provision) + P1–P6 programs + unit tests
-test/                           node:test suites + headless CDP probe/screenshot
-docs/                           architecture, compatibility, WinPE notes
-```
-
-## Verification
+### 路线二：要一个能插进 PE 的救援盘
 
 ```sh
-node --test packages/dsh-plugin-degraded/test/*.test.mjs   # pure logic
-node --test test/*.test.mjs                                 # templates + setup + privacy
-node --test scripts/a/test/*.test.mjs                       # A-side launcher + judges
-node scripts/setup.mjs --no-install
-node scripts/verify.mjs --all                              # compose + privacy
-node scripts/verify.mjs --boot                             # live route (needs a kernel)
-node scripts/doctor.mjs                                    # what this machine will do
-node scripts/a/run.mjs --all                               # portable runtime + P1–P5 + portability
+node scripts/setup.mjs
+node scripts/a/provision.mjs    # 把内核装进 runtime/
+node scripts/pack-pure.mjs      # 组装 dist/pure
 ```
 
-`verify.mjs --boot` starts the server, waits for
-`/api/dsh-rescue/capabilities`, asserts the payload shape, then kills it. Without
-an installed kernel it skips instead of failing; pass `--require-boot` in CI to
-make that a failure.
+外部组件（Pale Moon、PowerShell 7）不提交进仓库，下载地址与完整部署步骤见
+**[docs/pe-runbook.md](./docs/pe-runbook.md)**。
 
-## PE bundle (dsh-pure)
+然后：
 
-`node scripts/pack-pure.mjs` assembles `dist/pure`: node runtime, kernel deps,
-PowerShell 7, Pale Moon, and six rescue skills. See [docs/pe-runbook.md](docs/pe-runbook.md)
-for the external downloads and the full deployment steps.
-
-## WinPE notes
-
-See [docs/pe-notes.md](docs/pe-notes.md). Short version: Node and every
-`@deepseek-ai/*` native module ship a static CRT, so **no Visual C++ runtime is
-needed**; the three real obstacles are the missing PowerShell component, the
-absence of a browser (connect from a phone), and the 512 MB `X:` ramdisk (keep
-the kernel and `DSH_HOME` on the USB stick).
-
-## Compatibility
-
-Kernel versions, verified assumptions and known traps are in
-[docs/compat.md](docs/compat.md). The single upstream version source is
-[dsh-version.json](dsh-version.json); upgrading is:
-
-```sh
-node scripts/upgrade.mjs --to 0.2.0-rc.3
+```powershell
+robocopy dist\pure G:\dsh-pure /E
 ```
 
-It backs up the generated files, edits the version, re-runs setup, and rolls
-back automatically if composition fails.
+在 PE 里双击 `start-dsh.cmd`，会打印三行：
 
-## Safety
+```
+[dsh] credentials: loaded from G:\dsh-pure\apikey.txt
+[dsh] pwsh: G:\dsh-pure\pwsh\pwsh.exe
+[dsh] url: http://127.0.0.1:3080/?token=...
+```
 
-- `setup.mjs` only writes `<repo>/runtime` (or an explicitly forced path) and
-  refuses the running session's `DSH_HOME`.
-- `/api/dsh-rescue/capabilities` returns redacted booleans only (no paths, no
-  user names) and is loopback-only unless `server.allowRemote` is set.
-- `scripts/privacy-scan.mjs --strict` is the release gate: no binaries, no disk
-  images, no API keys, no personal absolute paths.
-- Real-machine testing: quit or whitelist 360 / network accelerators / anti-cheat
-  services first — they intercept process creation and port binding.
+---
 
-## License
+## ⚙️ 它是怎么做到的
 
-MIT. See [LICENSE](LICENSE).
+| 关卡 | 解法 |
+|---|---|
+| PE 里能不能跑 node | 官方构建是静态 CRT，只依赖系统 DLL，直接可用 |
+| PE 没有浏览器 | 自带 Pale Moon 便携版，它自己带 api-ms-win-* |
+| 浏览器引擎太老 | 给 `dsh-client-connection` 注入 `AbortSignal.any` 等 polyfill |
+| PE 没有 PowerShell | 自带 PowerShell 7 便携包（自包含，不需要 .NET） |
+| PE 没有 ping/ipconfig | 启动器全部用 node 实现，不依赖任何 cmd 外部命令 |
+| API Key 怎么给 | 启动器读 `apikey.txt`，注入 `DEEPSEEK_API_KEY` |
+| WMI 没启动 | 技能里给了 `net start winmgmt` 和不用 CIM 的替代路径 |
+
+---
+
+## 📋 已知限制
+
+| 现象 | 原因 | 处理 |
+|---|---|---|
+| `Get-CimInstance` 报错 | PE 里 WMI 没启动 | `net start winmgmt`；起不来就用 `Get-Partition`/`Get-Volume` |
+| 界面显示不全 | PE 默认 1024×768 | 已按 85% 渲染；可 F11 全屏或调高分辨率 |
+| `AbortSignal.any is not a function` | 浏览器引擎太老 | 打包时会自动打 polyfill；仍报错就换更新的浏览器 |
+| 没有网络 | PE 缺网卡驱动 | 装驱动或插网线；`net-check.cmd` 可诊断 |
+| 命令里 `Get-ChildItem` 不认 | 用了 cmd 垫片而非真 pwsh | 确保 `pwsh/` 目录存在且在 PATH 上 |
+
+---
+
+## 🌏 双语
+
+- 中文主页：本文件
+- English: [README.en.md](./README.en.md)
+- 完整参数与验证说明：[README.zh.md](./README.zh.md)
+- PE 部署手册：[docs/pe-runbook.md](./docs/pe-runbook.md)
+
+---
+
+## 🗂️ 目录结构
+
+```
+packages/dsh-plugin-degraded/   降级插件（Host + Web Client，零运行时依赖）
+profiles/                       三层 profile patch
+scripts/                        setup / upgrade / verify / doctor / privacy-scan
+scripts/a/                      便携运行时与验收流水线（probe→provision→boot→matrix）
+src/launch.mjs                  A 侧启动器
+launcher/                       PE 启动器、托盘启动器、六个技能
+docs/                           架构、兼容性、PE 笔记、部署手册
+test/                           node:test + 无头 CDP 截图
+```
+
+---
+
+## 📄 许可
+
+MIT。非官方发行版，与 DeepSeek 无隶属关系。
