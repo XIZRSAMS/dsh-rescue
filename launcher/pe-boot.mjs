@@ -119,7 +119,8 @@ function openBrowser(url) {
   const palemoon = join(ROOT, 'browser', 'Palemoon-Portable.exe')
   if (existsSync(palemoon)) {
     // Spawn the exe directly: going through "start" inside cmd is unreliable in PE.
-    spawn(palemoon, [url], { stdio: 'ignore', detached: true }).unref()
+    // 1024x768 PE desktops: ask for a window that fits above the taskbar.
+    spawn(palemoon, ['-width', '1000', '-height', '700', url], { stdio: 'ignore', detached: true }).unref()
     return 'bundled Pale Moon'
   }
   spawn('cmd', ['/c', 'start', '""', url], { stdio: 'ignore', detached: true, windowsHide: true }).unref()
