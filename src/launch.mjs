@@ -37,8 +37,12 @@ const layers = resolveLayers({ cli: args, file: fileConfig, env: process.env })
 /* Full overlay: the rendered one wins; the template is the fallback. */
 const overlayCandidates = [join(RUNTIME_DIR, 'full.patch.yml'), join(REPO_ROOT, 'profiles', 'full.patch.yml')]
 const overlay = overlayCandidates.find((candidate) => existsSync(candidate))
-if (layers.profile.ui === 'full' && !overlay) {
-  console.error('[dsh-rescue] warn: ui=full but no full overlay was found (runtime/full.patch.yml or profiles/full.patch.yml)')
+if (layers.profile.ui === 'full') {
+  if (overlay) {
+    console.log('[dsh-rescue] ui=full overlay: ' + overlay)
+  } else {
+    console.error('[dsh-rescue] warn: ui=full but no full overlay was found (runtime/full.patch.yml or profiles/full.patch.yml)')
+  }
 }
 
 const kernel = locateKernel({ runtimeDir: RUNTIME_DIR, env: process.env })

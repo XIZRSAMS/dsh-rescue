@@ -103,7 +103,7 @@ async function main() {
     record(
       'b-no-pwsh',
       noPwsh,
-      'PATH 去掉 PowerShell 目录 + ProgramFiles 指向空目录；本机没有 pwsh 7，此用例证明无 pwsh 时仍能起服务',
+      'PATH 去掉 PowerShell 目录 + ProgramFiles 指向空目录；本机 PowerShell 5.1 位于 System32，无法用环境变量隐藏，所以这里只验证「找不到 pwsh 7 时仍能起服务」；真正的 shell=none 由 b2 探针覆盖',
     ),
   )
 
