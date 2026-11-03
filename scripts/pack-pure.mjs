@@ -10,6 +10,7 @@
  */
 
 import { cpSync, existsSync, mkdirSync, rmSync, writeFileSync } from 'node:fs'
+import { spawnSync } from 'node:child_process'
 import { join } from 'node:path'
 
 import { REPO_ROOT } from './_shared.mjs'
@@ -119,5 +120,14 @@ writeFileSync(
   ].join('\r\n'),
   'utf8',
 )
+
+/* Old engines (Pale Moon/Goanna) miss AbortSignal.any; patch the client bundle. */
+const patchRun = spawnSync(process.execPath, [join(REPO_ROOT, 'scripts', 'patch-pe-polyfill.mjs'), '--root', out], { encoding: 'utf8' })
+if (patchRun.status !== 0) {
+  console.error(patchRun.stdout || '')
+  console.error(patchRun.stderr || '')
+  process.exit(1)
+}
+console.log((patchRun.stdout || '').trim())
 
 console.log('[pure] done')

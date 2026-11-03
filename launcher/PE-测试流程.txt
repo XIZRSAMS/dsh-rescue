@@ -1,35 +1,27 @@
 ============================================
-dsh-pure · PE 使用说明（2026-11-03 更新）
+dsh-pure · PE 使用说明（2026-11-03 深夜 v3）
 ============================================
 
-【已经验证过的】
-  node v22.20.0 在 PE 里能跑；fs / net / http / crypto 全部正常。
-  这个 PE 精简掉了 ping、ipconfig、timeout，所以启动器改成纯 node 实现，
-  不再依赖任何 cmd 外部命令。
+【这一版改了什么】
+  Pale Moon 缺少 AbortSignal.any / throwIfAborted，导致连不上后端。
+  已在 dsh-client-connection 的客户端文件里注入 polyfill 补上这些 API。
+  所以现在理论上可以真正连上，新建会话/工作区/模型设置应该能用了。
 
-【怎么用：三步】
-  1. 启动进 PE
-  2. 双击 G:\dsh-pure\start-dsh.cmd
-  3. 等屏幕出现 [dsh] url: http://127.0.0.1:3080/?token=...
-     浏览器会自动弹出并显示界面
+【怎么试】
+  1. 双击 G:\dsh-pure\start-dsh.cmd
+  2. 浏览器会自动打开（这次直接 spawn，不再经过 start）
+  3. 看左下角：还显示「重新连接中...」就是没成，消失就是成了
 
-【浏览器没自动弹】
-  手动打开 G:\dsh-pure\browser\Palemoon-Portable.exe
-  把屏幕上的 url 整行粘进地址栏。
+【如果还是连不上】
+  按 F12 打开错误控制台，把第一屏报错拍给我。
+  重点看还有没有 xxx is not a function 这种缺 API 的错。
 
-【出问题怎么记】
-  屏幕会打印：
-    [dsh] kernel did not answer in 120s.
-    后面跟着最后 20 行日志
-  完整日志在 G:\dsh-pure\runtime\logs\web.log
-  把屏幕那一段拍照发我就行。
+【已经确认可行的事】
+  - node v22.20.0 在 PE 里跑得起来（fs/net/http/crypto 全过）
+  - 内核能起、能打印 token、能响应 HTTP、界面能渲染
+  - 这个 PE 没有 ping / ipconfig / timeout，启动器已全部改成 node 实现
 
 【不要做的事】
-  × 不要去 G:\dsh-pure 以外的目录乱点（尤其 USM_PE驱动安装日志 / win 10 / 装机工具）
-  × 不要删包里的任何文件
-  × 不要改分辨率和显示缩放
-  × 不要在跑着的时候直接拔 U 盘
-
-【备用：探针（现在一般不需要）】
-  想再确认环境就跑 G:\dsh-pure\pe-probe.cmd，
-  结果在 G:\dsh-pure\logs\pe-probe.txt。
+  × 不要去 G:\dsh-pure 以外的目录乱点
+  × 不要删包里的文件
+  × 不要改分辨率
